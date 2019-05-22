@@ -1,7 +1,8 @@
 #ifndef _UTILITY_H_
 #define _UTILITY_H_
 
-#define SUPPORT_CPLUSPLUS11
+//check compiler is support c11
+#define ENABLE_C11
 
 #include <cstdio>
 #include <cstring>
@@ -19,7 +20,7 @@
 #define _access access
 #endif
 
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -39,6 +40,11 @@
 
 #define UN_USED(x) { do{;} while (0); }
 
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 
 typedef unsigned char byte;
 
@@ -69,7 +75,7 @@ private:
 
 
 /** @brief Deletes memory safely and points to null */
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
 template<typename T>
 static inline
 typename std::enable_if<std::is_pointer<T*>::value, void>::type
@@ -120,7 +126,7 @@ public:
         }
 
         _quit = false;
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
         std::thread thd(&Thread::work_thread, this);
 
         if (isJoin) {
@@ -180,7 +186,7 @@ public:
 
     /* @brief This thread sleep milliseconds */
     static void msleep(int ms) {
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
         std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 #else
         usleep(ms * 1000);
@@ -192,7 +198,7 @@ protected:
     virtual void run() = 0;
 
 private:
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
     void work_thread() {
         _isRunning = true;
         run();
@@ -207,7 +213,7 @@ private:
     }
 #endif
 private:
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
     /* @brief Control loop running function quit if used _quit variable to control.*/
     std::atomic<bool> _quit;
 
@@ -225,7 +231,7 @@ private:
 /*
 * @brief Mutex that using std::mutex or pthread
 */
-#ifdef SUPPORT_CPLUSPLUS11
+#ifdef ENABLE_C11
 class Mutex : public std::mutex {
 public:
     Mutex()
@@ -666,5 +672,10 @@ static int Spit(const std::string& src, const std::string& separator, std::vecto
 }
 
 }//! namespace
+
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif //! _UTILITY_H_
