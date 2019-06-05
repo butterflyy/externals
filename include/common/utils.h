@@ -522,6 +522,22 @@ static int ReadFile(const std::string& path, byte** pbuff) {
 }
 
 /*
+* @brief Read file data to string
+* @param path file path
+* @str out string data
+* @return -1 failed, others file size succeeded
+*/
+static int ReadFile(const std::string& path, std::string& str) {
+	byte* buff(nullptr);
+	int size = ReadFile(path, &buff);
+	if (size > 0 && buff){
+		str = std::string((char*)buff, size);
+	}
+	SAFE_DELETE_ARRAY(buff);
+	return size;
+}
+
+/*
 * @brief Write buffer data fo file,Any contents that existed in the file before it is open are discarded
 * @param path file path
 * @param buff buffer data pointer
@@ -539,6 +555,16 @@ static int WriteFile(const std::string& path, const byte* buff, int len) {
     file.write(reinterpret_cast<const char*>(buff), len);
     file.close();
     return (int)len;
+}
+
+/*
+* @brief Write string fo file,Any contents that existed in the file before it is open are discarded
+* @param path file path
+* @param str string data
+* @return -1 failed, others succeeded
+*/
+static int WriteFile(const std::string& path, const std::string& str) {
+	return WriteFile(path, (byte*)str.c_str(), (int)str.size());
 }
 
 /*
