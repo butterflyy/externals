@@ -1,0 +1,22 @@
+#
+# This file tells GIT to ignore all files with exception
+# of the negated patterns bellow
+#
+*
+
+# Negated patterns (only the files we want to include)
+!.gitignore
+!.gitattributes
+!.gitmodules
+
+# type
+!*.cpp
+!*.c
+!*.h
+
+# include file
+!include
+!ButtonST
+!common
+
+

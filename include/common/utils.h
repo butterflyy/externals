@@ -697,6 +697,26 @@ static int Spit(const std::string& src, const std::string& separator, std::vecto
 	return (int)dests.size();
 }
 
+#ifdef WIN32
+/*
+* @brief SplitPath same as _splitpath
+*/
+static void SplitPath(const std::string* fullpath, std::string* drive, std::string* dir, std::string* filename, std::string* ext){
+	char drive_buff[3];
+	char dir_buff[256];
+	char filename_buff[256];
+	char ext_buff[256];
+
+	_splitpath(fullpath->c_str(), drive_buff, dir_buff, filename_buff, ext_buff);
+
+	if (drive) *drive = drive_buff;
+	if (dir) *dir = dir_buff;
+	if (filename) *filename = filename_buff;
+	if (ext) *ext = ext_buff;
+}
+#endif
+
+
 }//! namespace
 
 
