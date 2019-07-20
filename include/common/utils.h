@@ -697,6 +697,16 @@ static int Spit(const std::string& src, const std::string& separator, std::vecto
 	return (int)dests.size();
 }
 
+static int StrToInt(const std::string& str){
+	return atoi(str.c_str());
+}
+
+static std::string IntToStr(int i){
+	char buff[15] = {0};
+	itoa(i, buff, 10);
+	return buff;
+}
+
 #ifdef WIN32
 /*
 * @brief SplitPath same as _splitpath
