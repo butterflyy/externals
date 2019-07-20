@@ -697,15 +697,32 @@ static int Spit(const std::string& src, const std::string& separator, std::vecto
 	return (int)dests.size();
 }
 
-static int StrToInt(const std::string& str){
+inline int StrToInt(const std::string& str){
 	return atoi(str.c_str());
 }
 
-static std::string IntToStr(int i){
+inline std::string IntToStr(int i){
 	char buff[15] = {0};
 	itoa(i, buff, 10);
 	return buff;
 }
+
+
+static std::string Trim(const std::string& str)
+{
+	std::string::size_type pos = str.find_first_not_of(' ');
+	if (pos == std::string::npos)
+	{
+		return str;
+	}
+	std::string::size_type pos2 = str.find_last_not_of(' ');
+	if (pos2 != std::string::npos)
+	{
+		return str.substr(pos, pos2 - pos + 1);
+	}
+	return str.substr(pos);
+}
+
 
 #ifdef WIN32
 /*

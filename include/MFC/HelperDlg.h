@@ -26,7 +26,7 @@ protected:
 	std::string GetDlgText(int id){
 		static char buff[1024] = { 0 };
 		GetDlgItemTextA(m_dlg->GetSafeHwnd(), id, buff, 1024);
-		return buff;
+		return utils::Trim(buff);
 	}
 
 	void SetDlgInt(int id, int value){
