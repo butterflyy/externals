@@ -23,7 +23,10 @@ protected:
 		m_brush.CreateSolidBrush(bkColor);
 	}
 
-
+	void CreatFont(int width){
+		m_font.CreateFontW(width, 0, 0, 0, FW_HEAVY, FALSE, FALSE, 0, ANSI_CHARSET,OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_SWISS, _T("Î¢ÈíÑÅºÚ"));
+	}
 
 	void ShowMessage(const std::string& msg){
 		if (m_en){
@@ -45,11 +48,11 @@ protected:
 	}
 
 	void SetDlgInt(int id, int value){
-		return SetDlgText(id, utils::IntToStr(value));
+		return SetDlgText(id, utils::Itos(value));
 	}
 
 	int GetDlgInt(int id){
-		return utils::StrToInt(GetDlgText(id));
+		return utils::Stoi(GetDlgText(id));
 	}
 
 	void ShowItem(int id){
@@ -69,5 +72,6 @@ protected:
 	CDialog* m_dlg;
 	bool m_en;
 	CBrush m_brush;
+	CFont m_font;
 	COLORREF m_bkColor;
 };
