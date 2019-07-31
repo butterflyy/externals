@@ -12,6 +12,7 @@
 #include <fstream>
 #include <cstdarg>
 #include <cstdlib>
+#include <ctime>
 
 #ifdef WIN32
 #include <io.h>
@@ -743,6 +744,41 @@ static std::string Trim(const std::string& str)
 	return str.substr(pos);
 }
 
+enum TimeFormat{
+	TIME_FORMAT_1, //"%04d-%02d-%02d %02d:%02d:%02d" 2019-08-09 12:02:03
+	TIME_FORMAT_2, //"%d-%d-%d %d:%d:%d"             2019-8-9 12:2:3
+	TIME_FORMAT_3, //"%04d%02d%02d%02d%02d%02d"      20190809120203
+	TIME_FORMAT_4, //"%04d-%02d-%02d-%02d-%02d-%02d" 2019-08-09-12-02-03
+};
+
+static std::string GetFormatCurrentTime(TimeFormat format = TIME_FORMAT_1){
+	time_t t;
+	time(&t);
+	struct tm *lt = localtime(&t);
+	
+	std::string strformat;
+	switch (format)
+	{
+	case utils::TIME_FORMAT_1:
+		strformat = "%04d-%02d-%02d %02d:%02d:%02d";
+		break;
+	case utils::TIME_FORMAT_2:
+		strformat = "%d-%d-%d %d:%d:%d";
+		break;
+	case utils::TIME_FORMAT_3:
+		strformat = "%04d%02d%02d%02d%02d%02d";
+		break;
+	case utils::TIME_FORMAT_4:
+		strformat = "%04d-%02d-%02d-%02d-%02d-%02d";
+		break;
+	default:
+		strformat = "%04d-%02d-%02d %02d:%02d:%02d";
+		break;
+	}
+
+	return utils::StrFormat(strformat.c_str(),
+		lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+}
 
 #ifdef WIN32
 /*
@@ -761,6 +797,22 @@ static void SplitPath(const std::string* fullpath, std::string* drive, std::stri
 	if (filename) *filename = filename_buff;
 	if (ext) *ext = ext_buff;
 }
+
+struct fileinfo{
+    std::string dirve;
+    std::string dir;
+    std::string filedir;
+    std::string filename;
+    std::string ext;
+};
+
+static fileinfo SplitPath(const std::string& path){
+        fileinfo info;
+        SplitPath(&path, &info.dirve, &info.dir, &info.filename, &info.ext);
+        info.filedir = info.dirve + info.dir;
+        return info;
+}
+
 #endif
 
 

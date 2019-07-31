@@ -10,6 +10,28 @@ for (int i = 0; i < buttonSize; i++){ \
 
 #define SET_DEFAULT_BTST(shadeButtons, buttonSize) SET_BTST(shadeButtons, buttonSize, RGB(91, 130, 180))
 
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
+
+
+inline void OutputDebug(const char* format, ...){
+	assert(format);
+	char buff[1024] = { 0 };
+	va_list va;
+	va_start(va, format);
+	int len = vsnprintf(buff, 1024 - 1, format, va);
+	va_end(va);
+
+	if (len == -1) {
+		assert(false);
+	}
+
+	OutputDebugStringA(buff);
+}
+
 class HelperDlg{
 protected:
 	HelperDlg(CDialog* dlg, 
@@ -55,12 +77,16 @@ protected:
 		return utils::Stoi(GetDlgText(id));
 	}
 
-	void ShowItem(int id){
-		::ShowWindow(::GetDlgItem(m_dlg->GetSafeHwnd(), id), SW_SHOWNORMAL);
+	void SetShow(int id, bool show){
+		::ShowWindow(::GetDlgItem(m_dlg->GetSafeHwnd(), id), show);
 	}
 
-	void HideItem(int id){
-		::ShowWindow(::GetDlgItem(m_dlg->GetSafeHwnd(), id), SW_HIDE);
+	bool IsCheck(int id){
+		return ((CButton*)m_dlg->GetDlgItem(id))->GetCheck();
+	}
+
+	void SetCheck(int id, bool checked){
+		((CButton*)m_dlg->GetDlgItem(id))->SetCheck(checked);
 	}
 
 	//interface
@@ -75,3 +101,8 @@ protected:
 	CFont m_font;
 	COLORREF m_bkColor;
 };
+
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
