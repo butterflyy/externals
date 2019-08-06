@@ -29,6 +29,21 @@ public:
 		return task;
 	}
 
+	bool IsEmptySafe(){
+		_mutex.lock();
+		bool isEmpty = _tasks.empty();
+		_mutex.unlock();
+
+		return isEmpty;
+	}
+
+	int TaskSize(){
+		_mutex.lock();
+		int size = _tasks.size();
+		_mutex.unlock();
+		return size;
+	}
+
 private:
 	std::queue<T> _tasks;
 	utils::Mutex _mutex;

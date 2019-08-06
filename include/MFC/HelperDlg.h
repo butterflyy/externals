@@ -11,27 +11,6 @@ for (int i = 0; i < buttonSize; i++){ \
 #define SET_DEFAULT_BTST(shadeButtons, buttonSize) SET_BTST(shadeButtons, buttonSize, RGB(91, 130, 180))
 
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4996)
-#endif
-
-
-inline void OutputDebug(const char* format, ...){
-	assert(format);
-	char buff[1024] = { 0 };
-	va_list va;
-	va_start(va, format);
-	int len = vsnprintf(buff, 1024 - 1, format, va);
-	va_end(va);
-
-	if (len == -1) {
-		assert(false);
-	}
-
-	OutputDebugStringA(buff);
-}
-
 class HelperDlg{
 protected:
 	HelperDlg(CDialog* dlg, 
@@ -101,8 +80,3 @@ protected:
 	CFont m_font;
 	COLORREF m_bkColor;
 };
-
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

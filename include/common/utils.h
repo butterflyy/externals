@@ -799,17 +799,19 @@ static void SplitPath(const std::string* fullpath, std::string* drive, std::stri
 }
 
 struct fileinfo{
-    std::string dirve;
-    std::string dir;
-    std::string filedir;
-    std::string filename;
-    std::string ext;
+    std::string dirve;     //"d:"
+    std::string dir;       //"\test\happen\"
+    std::string filedir;   //"d:\test\happen\"
+    std::string filename;  //"image.png"
+	std::string name;      //"image"
+    std::string ext;	   //"png"
 };
 
 static fileinfo SplitPath(const std::string& path){
         fileinfo info;
-        SplitPath(&path, &info.dirve, &info.dir, &info.filename, &info.ext);
+		SplitPath(&path, &info.dirve, &info.dir, &info.name, &info.ext);
         info.filedir = info.dirve + info.dir;
+		info.filename = info.name + info.ext;
         return info;
 }
 
