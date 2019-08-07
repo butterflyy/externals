@@ -16,8 +16,11 @@
 
 # include file
 !include
+!bmp
 !ButtonST
 !common
+!EasyUsb
+!farfrr
 !MFC
 
 
