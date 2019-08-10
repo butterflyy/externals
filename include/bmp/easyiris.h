@@ -39,7 +39,33 @@ namespace bmp{
 		}
 
 		int type = bmp::CheckTableType(rgb);
-		if (type != 0){
+		if (type == 0){
+			;//ok
+		}
+		else if (type == 1){
+			//need trand color.
+			utils::Buffer tmpsrcbuff(srcbuf);
+
+			for (int i = 0; i < tmpsrcbuff.size(); i++){
+				//color
+				bmp::RgbQuad oldcolor = rgb[tmpsrcbuff[i]];
+				int newcolorindex = -1;
+				for (int j = 0; j < 256; j++){
+					if (oldcolor.Red == j &&
+						oldcolor.Green == j &&
+						oldcolor.Blue == j){
+						newcolorindex = j;
+						break;
+					}
+				}
+				if (newcolorindex == -1){
+					assert(false);
+				}
+				//new color index
+				srcbuf[i] = newcolorindex;
+			}
+		}
+		else{
 			assert(false);
 			return -5;
 		}
