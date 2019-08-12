@@ -236,10 +236,13 @@ namespace bmp{
 		byte* filebuff = nullptr;
 		int filesize = utils::ReadFile(path, &filebuff);
 		if (filesize < 0){
+			SAFE_DELETE_ARRAY(filebuff);
 			return -1;
 		}
 
-		return ReadDataStream(filebuff, filesize, buf, size, width, height, table);
+		int ret = ReadDataStream(filebuff, filesize, buf, size, width, height, table);
+		SAFE_DELETE_ARRAY(filebuff);
+		return ret;
 	}
 
 	/*
