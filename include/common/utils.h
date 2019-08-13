@@ -724,7 +724,7 @@ inline int Stoi(const std::string& str){
 
 inline std::string Itos(int i){
 	char buff[15] = {0};
-	itoa(i, buff, 10);
+	sprintf(buff, "%d", i);
 	return buff;
 }
 
