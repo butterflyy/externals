@@ -2,7 +2,13 @@
 #define _UTILITY_H_
 
 //check compiler is support c11
+#ifdef WIN32 //vc not support C11 all, but use it
 #define ENABLE_C11
+#else //gcc support c11
+#if __cplusplus >= 201103L
+#define ENABLE_C11
+#endif
+#endif
 
 #include <cstdio>
 #include <cstring>
