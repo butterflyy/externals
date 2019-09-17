@@ -21,9 +21,10 @@ public:
 
 	struct FileInfo{
 		FileType type;
-		std::string fileName;
-		std::string filePath;
-		std::string suffix;
+		std::string filePath; //"d:\\test\\image.png"
+		std::string fileName; //"image.png"
+		std::string name; //"image"
+		std::string suffix;//"png"
 	};
 
 
@@ -105,8 +106,10 @@ private:
 					if (_filterType & FILE){
 						info.type = FILE;
 						int sindex = info.fileName.find_last_of('.');
-						if (sindex != -1)
+						if (sindex != -1){
+							info.name = info.fileName.substr(0, sindex);
 							info.suffix = info.fileName.substr(sindex + 1);
+						}
 
 						bool add(true);
 						if (!_filterSuffix.empty()){

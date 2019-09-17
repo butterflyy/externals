@@ -46,6 +46,9 @@ namespace farfrr
 
 			if (issame){//same file
 				_readThread->_result.score.scoreSame[score]++;
+				if (score < 30){
+					_readThread->_result.samenoMatchs.push_back(line);
+				}
 			}
 			else{//diff
 				_readThread->_result.score.scoreDiff[score]++;
