@@ -1,6 +1,5 @@
 #pragma once
 #include <common\TaskManager.h>
-#include <map>
 #include <farfrr\AnalyseData.h>
 
 
@@ -11,8 +10,6 @@ namespace farfrr{
 	{
 	public:
 		friend class AnalyseThread;
-
-		typedef std::multimap<std::string, std::string> TrueMap;
 
 		ReadThread();
 		~ReadThread();
@@ -32,10 +29,8 @@ namespace farfrr{
 		std::vector<AnalyseThread*> _analyseThreads;
 
 		std::vector<std::string> _resultpaths;
-		TrueMap _trueMap;
 
 		ResultData _result;
-		utils::Mutex _resultMutex;
 	};
 
 }

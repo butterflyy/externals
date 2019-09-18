@@ -26,15 +26,6 @@ namespace farfrr{
 	void ReadThread::SetWork(const std::vector<std::string>& resultpaths, const std::string& truefile){
 		_resultpaths = resultpaths;
 
-		//init data
-		_trueMap.clear();
-		_result.count = 0;
-		memset(&_result.score, 0, sizeof(farfrr::Score));
-		_result.countValnm = 0;
-		memset(&_result.scoreValnm, 0, sizeof(farfrr::Score));
-		_result.diffMatchs.clear();
-		_result.samenoMatchs.clear();
-		
 		//read true lines
 		std::vector<std::string> true_lines;
 		int size = utils::ReadLines(truefile, true_lines);
@@ -43,7 +34,7 @@ namespace farfrr{
 			return;
 		}
 
-
+		AnalyseThread::TrueMap trueMap;
 		for (int i = 0; i < true_lines.size(); i++){
 			std::vector<std::string> dests;
 			int size = utils::Spit(true_lines[i], " ", dests);
@@ -52,12 +43,13 @@ namespace farfrr{
 				return;
 			}
 
-			_trueMap.insert(std::pair<std::string, std::string>(dests[0], dests[1]));
+			trueMap.insert(AnalyseThread::MakeKey(dests[0], dests[1]));
 		}
 
 		Thread::start();
 
 		for (int i = 0; i < _analyseThreads.size(); i++){
+			_analyseThreads[i]->SetTrue(trueMap);
 			_analyseThreads[i]->start();
 		}
 	}
@@ -66,13 +58,22 @@ namespace farfrr{
 	void ReadThread::WaitWorkFinished(){
 		Thread::quit();
 
+		while (!IsEmptySafe()){
+			Thread::msleep(1000); //waiting handing task
+		}
 		Thread::msleep(10); //waiting get task
 
 		for (int i = 0; i < _analyseThreads.size(); i++){
 			_analyseThreads[i]->quit();
 		}
-	}
 
+		//get result
+		_result.clear();
+		for (int i = 0; i < _analyseThreads.size(); i++){
+			const ResultData& res = _analyseThreads[i]->GetResultData();
+			_result += res;
+		}
+	}
 
 	void ReadThread::run(){
 		for (int i = 0; i < _resultpaths.size(); i++){

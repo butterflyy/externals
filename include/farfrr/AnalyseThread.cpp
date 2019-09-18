@@ -26,53 +26,47 @@ namespace farfrr
 				return;
 			}
 
+			if (dests[0] == dests[1]){//same tmpl
+				continue;
+			}
+
 			int score = utils::Stoi(dests[2].c_str());
 			int angle = utils::Stoi(dests[3].c_str());
 			int valnm = utils::Stoi(dests[4].c_str());
 
-			bool issame = false;
-
-			std::pair<ReadThread::TrueMap::const_iterator, ReadThread::TrueMap::const_iterator>
-				trueResult = _readThread->_trueMap.equal_range(dests[0]);
-			for (ReadThread::TrueMap::const_iterator it = trueResult.first; it != trueResult.second; ++it){
-				if (it->second == dests[1]){
-					issame = true;
-					break;
-				}
-			}
-
-
-			utils::LockGuard<utils::Mutex> lock(_readThread->_resultMutex);
+			bool issame = _trueMap.find(MakeKey(dests[0], dests[1])) != _trueMap.end();
 
 			if (issame){//same file
-				_readThread->_result.score.scoreSame[score]++;
+				_result.score.scoreSame[score]++;
 				if (score < 30){
-					_readThread->_result.samenoMatchs.push_back(line);
+					_result.samenoMatchs.push_back(line);
 				}
 			}
 			else{//diff
-				_readThread->_result.score.scoreDiff[score]++;
+				_result.score.scoreDiff[score]++;
 				if (score > 34){
-					_readThread->_result.diffMatchs.push_back(line);
+					_result.diffMatchs.push_back(line);
 				}
 			}
-			_readThread->_result.count++;
+			_result.count++;
 
 			if (valnm > 35){//valnm score
 				if (issame){//same file
-					_readThread->_result.scoreValnm.scoreSame[score]++;
+					_result.scoreValnm.scoreSame[score]++;
 				}
 				else{//diff
-					_readThread->_result.scoreValnm.scoreDiff[score]++;
+					_result.scoreValnm.scoreDiff[score]++;
 				}
 
-				_readThread->_result.countValnm++;
+				_result.countValnm++;
 			}
 		}
 	}
 
 
 	void AnalyseThread::run(){
+		_result.clear();
+
 		while (!Thread::isQuit()){
 			if (_readThread->IsEmpty()){
 				Thread::msleep(10);
