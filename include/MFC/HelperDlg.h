@@ -68,6 +68,14 @@ protected:
 		((CButton*)m_dlg->GetDlgItem(id))->SetCheck(checked);
 	}
 
+	bool IsEnabled(int id){
+		return m_dlg->GetDlgItem(id)->IsWindowEnabled();
+	}
+
+	void SetEnable(int id, bool enabled){
+		m_dlg->GetDlgItem(id)->EnableWindow(enabled);
+	}
+
 	//interface
 	HBRUSH SetCtlColor(CDC* pDC){
 		pDC->SetBkColor(m_bkColor);
