@@ -10,7 +10,7 @@
 namespace farfrr{
 
 	ReadThread::ReadThread(){
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < 2; i++){
 			_analyseThreads.push_back(new AnalyseThread(this, i));
 		}
 	}
@@ -110,7 +110,7 @@ namespace farfrr{
 					data = new Data;
 				}
 				data->lines.push_back(s);
-				if (data->lines.size() >= 10000){ //add thread handing
+				if (data->lines.size() >= 100000){ //add thread handing
 
 					while (TaskSize() > 300){
 						Thread::msleep(1000);
