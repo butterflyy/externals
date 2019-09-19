@@ -17,19 +17,11 @@ namespace farfrr{
 		}
 
 		static std::string MakeKey(const std::string& id1, const std::string& id2){
-			if (id1.size() > id2.size()){
-				return id1 +" " +  id2;
-			}
-			else if (id1.size() < id2.size()){
-				return id2 + " " + id1;
+			if (id1 >= id2){
+				return id1 + " " + id2;
 			}
 			else{
-				if (id1 >= id2){
-					return id1 + " " + id2;
-				}
-				else{
-					return id2 + " " + id1;
-				}
+				return id2 + " " + id1;
 			}
 		}
 
