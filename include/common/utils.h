@@ -750,6 +750,16 @@ static std::string Trim(const std::string& str)
 	return str.substr(pos);
 }
 
+inline void SafeStrCpy(char* dest, const char* source, size_t maxsize){
+	if (strlen(source) >= maxsize){
+		memcpy(dest, source, maxsize - 1);
+		dest[maxsize - 1] = 0;
+	}
+	else{
+		strcpy(dest, source);
+	}
+}
+
 enum TimeFormat{
 	TIME_FORMAT_1, //"%04d-%02d-%02d %02d:%02d:%02d" 2019-08-09 12:02:03
 	TIME_FORMAT_2, //"%d-%d-%d %d:%d:%d"             2019-8-9 12:2:3

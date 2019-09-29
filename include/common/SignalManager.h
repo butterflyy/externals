@@ -4,7 +4,7 @@
 #include <map>
 #include <common/Signal_.h>
 
-template<class SID>
+template<typename SID>
 class SignalManager{
 public:
 	typedef std::map<SID, Signal*> SignalMap;
