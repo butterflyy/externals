@@ -4,11 +4,9 @@
 #include <map>
 #include <common/Signal_.h>
 
-
+template<class SID>
 class SignalManager{
 public:
-	typedef unsigned long SID;
-
 	typedef std::map<SID, Signal*> SignalMap;
 
 	SignalManager(){
@@ -25,7 +23,7 @@ public:
 	int CreateSignal(SID id){
 		if (find(id)){
 			assert(false);
-			return false;
+			return -1;
 		}
 		
 		//create event
@@ -38,7 +36,7 @@ public:
 	int CloseSignal(SID id){
 		if (!find(id)){
 			assert(false);
-			return false;
+			return -1;
 		}
 
 		SAFE_DELETE(_eventMap[id]);
@@ -48,7 +46,7 @@ public:
 	int SetSignal(SID id){
 		if (!find(id)){
 			assert(false);
-			return false;
+			return -1;
 		}
 
 		return _eventMap[id]->SetSignal();
@@ -57,7 +55,7 @@ public:
 	int ResetSignal(SID id){
 		if (!find(id)){
 			assert(false);
-			return false;
+			return -1;
 		}
 
 		return _eventMap[id]->ResetSignal();
@@ -74,7 +72,7 @@ public:
 	int WaitSignal(SID id, unsigned long msec = 0xFFFFFFFF /*INFINITE*/){
 		if (!find(id)){
 			assert(false);
-			return false;
+			return -1;
 		}
 
 		return _eventMap[id]->WaitSignal(msec);
