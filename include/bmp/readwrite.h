@@ -1,8 +1,7 @@
 ﻿#ifndef __BMP_READ_WRITE_H__
 #define __BMP_READ_WRITE_H__
 
-#include <common\utils.h>
-#include <cinttypes>
+#include <common/utils.h>
 
 #pragma pack (push, 1) 
 
