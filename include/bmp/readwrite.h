@@ -101,7 +101,7 @@ namespace bmp{
 			return -1;
 		}
 
-		return ReadInfoStream(info.data(), info.size(), width, height);
+		return ReadInfoStream(info.data(), (int)info.size(), width, height);
 	}
 
 
@@ -326,7 +326,7 @@ namespace bmp{
 		int datasize = width * height;
 
 		utils::Buffer filedata(headsize + datasize);
-		int ret = WriteDataStream(filedata.data(), filedata.size(), buf, width, height, table);
+		int ret = WriteDataStream(filedata.data(), (int)filedata.size(), buf, width, height, table);
 		if (ret < 0){
 			return ret;
 		}
