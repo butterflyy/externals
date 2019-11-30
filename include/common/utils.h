@@ -54,6 +54,7 @@
 #endif
 
 typedef unsigned char byte;
+typedef std::vector<std::string> stringvec;
 
 namespace utils  {
 /*
@@ -647,7 +648,7 @@ static std::string HexFormat(const byte* byte, int len, bool uppercase = true) {
 * @param lines file lines
 * @return -1 failed, others is file lines
 */
-static int ReadLines(const std::string& path, std::vector<std::string>& lines) {
+static int ReadLines(const std::string& path, stringvec & lines) {
 	FILE* f = fopen(path.c_str(), "rb");
 	if (!f) return -1;
 
@@ -682,9 +683,9 @@ static int ReadLines(const std::string& path, std::vector<std::string>& lines) {
 * @param lines file lines
 * @return -1 failed, others succeeded
 */
-static int WriteLines(const std::string& path, const std::vector<std::string>& lines){
+static int WriteLines(const std::string& path, const stringvec& lines){
 	std::string str;
-	for (std::vector<std::string>::const_iterator it = lines.begin();
+	for (stringvec::const_iterator it = lines.begin();
 		it != lines.end();
 		++it){
 		str += *it;
@@ -701,7 +702,7 @@ static int WriteLines(const std::string& path, const std::vector<std::string>& l
 * @param dests return string
 * @return spit success string size
 */
-static int Spit(const std::string& src, const std::string& separator, std::vector<std::string>& dests){
+static int Spit(const std::string& src, const std::string& separator, stringvec& dests){
 	if (src.empty() || separator.empty())
 		return 0;
 
