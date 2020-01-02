@@ -12,8 +12,8 @@ namespace bmp{
 			CopyMiddle(src, src_width, src_height, des, des_width, des_height, fillcolor);
 		}
 		else{
-			int scale_width = src_width / scale;
-			int scale_height = src_height / scale;
+			int scale_width = static_cast<int>(src_width / scale);
+			int scale_height = static_cast<int>(src_height / scale);
 			utils::Buffer scaleBuf(scale_width * scale_height);
 			Resize(src, scaleBuf.data(), src_width, src_height, scale);
 			CopyMiddle(scaleBuf.data(), scale_width, scale_height, des, des_width, des_height, fillcolor);
@@ -46,7 +46,7 @@ namespace bmp{
 			//need trand color.
 			utils::Buffer tmpsrcbuff(srcbuf);
 
-			for (int i = 0; i < tmpsrcbuff.size(); i++){
+			for (size_t i = 0; i < tmpsrcbuff.size(); i++){
 				//color
 				bmp::RgbQuad oldcolor = rgb[tmpsrcbuff[i]];
 				int newcolorindex = -1;

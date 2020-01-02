@@ -1,6 +1,11 @@
 #ifndef __BMP_RESIZE_H__
 #define __BMP_RESIZE_H__
 
+#pragma warning(push)
+#pragma warning(disable : 4305)
+#pragma warning(disable : 4244)
+
+
 namespace bmp{
 	static void Resize(const unsigned char *src, unsigned char *des, int width, int height, float scale = 1.25) {
 		int dw = 0;
@@ -59,5 +64,7 @@ namespace bmp{
 	}
 
 }//!namespace
+
+#pragma warning(pop)
 
 #endif //!__BMP_RESIZE_H__
