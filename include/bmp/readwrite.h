@@ -167,7 +167,7 @@ namespace bmp{
 	* @param table table buffer 
 	* @return less than 0 failed, others file size succeeded
 	*/
-	static int ReadDataStream(const byte* filebuf, int filesize, byte* buf, int size, int* width, int* height, RgbQuad* table = nullptr){
+	static int ReadDataStream(const byte* filebuf, int filesize, byte* buf, int size, int& width, int& height, RgbQuad* table = nullptr){
 		int headsize = sizeof(BitMapFileHeader)+sizeof(BitMapInfoHeader)
 			+256 * sizeof(RgbQuad);
 
@@ -197,10 +197,10 @@ namespace bmp{
 		bool isReverse = (pInfoHead->biHeight < 0);
 		const byte* pData = filebuf + headsize;
 
-		*width = pInfoHead->biWidth;
-		*height = isReverse ? (0 - 0 - pInfoHead->biHeight) : pInfoHead->biHeight;
+		width = pInfoHead->biWidth;
+		height = isReverse ? (0 - 0 - pInfoHead->biHeight) : pInfoHead->biHeight;
 
-		int bufsize = (*width) * (*height);
+		int bufsize = width * height;
 		if (size < bufsize){
 			return -1;
 		}
@@ -210,10 +210,10 @@ namespace bmp{
 		}
 		else{
 
-			for (int j = 0; j < *height; j++)
-			for (int i = 0; i < *width; i++)
+			for (int j = 0; j < height; j++)
+			for (int i = 0; i < width; i++)
 			{
-				buf[j*(*width) + i] = pData[(*height - j - 1)*(*width) + i];
+				buf[j*width + i] = pData[(height - j - 1)* width + i];
 			}
 		}
 
@@ -232,7 +232,7 @@ namespace bmp{
 	* @param table table buffer
 	* @return less than 0 failed, others file size succeeded
 	*/
-	static int ReadData(const std::string& path, byte* buf, int size, int* width, int* height, RgbQuad* table = nullptr){
+	static int ReadData(const std::string& path, byte* buf, int size, int& width, int& height, RgbQuad* table = nullptr){
 		byte* filebuff = nullptr;
 		int filesize = utils::ReadFile(path, &filebuff);
 		if (filesize < 0){
