@@ -33,7 +33,7 @@ namespace bmp{
 		utils::Buffer srcbuf(width*height);
 
 		static bmp::RgbQuad rgb[256];
-		int size = bmp::ReadData(src, srcbuf.data(), srcbuf.size(), width, height, rgb);
+		int size = bmp::ReadData(src, srcbuf.data(), static_cast<int>(srcbuf.size()), width, height, rgb);
 		if (size < 0){
 			return size;
 		}

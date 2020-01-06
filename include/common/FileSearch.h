@@ -8,7 +8,7 @@
 
 class FileSearch{
 public:
-	FileSearch(const std::string dir)
+	FileSearch(const std::string& dir)
 		:_dir(dir),
 		_filterType(DIR | FILE),
 		_isSearchSubdir(false){
@@ -29,6 +29,7 @@ public:
 
 
 	typedef std::vector<FileInfo> FileInfoList;
+
 
 	/*
 	* Set Filter File Type.
@@ -64,6 +65,17 @@ public:
 		return infos;
 	}
 
+	/*
+	* Easy Get File Info List.
+	* @param dir search file directory.
+	* @param suffix default is empty, not set filter suffix.
+	* @return File info list.
+	*/
+	static FileInfoList GetFileInfoList(const std::string& dir, const std::string& suffix = ""){
+		FileSearch search(dir);
+		search.SetFilterSuffix(suffix);
+		return search.GetFileInfoList();
+	}
 private:
 	void search(const std::string& dir, FileInfoList& infos){
 		WIN32_FIND_DATAA FindFileData;
