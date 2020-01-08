@@ -35,24 +35,35 @@ namespace farfrr{
 		return std::string(buff);
 	}
 
+	/*if read double value from file, may be loss precision*/
 	static void GetIntegral(const Score& score, Integral& inte){
-		int64 countS = 0, countD = 0;
+		Score inte_score;
+		memset(&inte_score, 0, sizeof(Score));
 		for (int i = 0; i < 101; i++) {
-			countS += score.scoreSame[i];
-			countD += score.scoreDiff[i];
+			if (i == 0){
+				inte_score.scoreSame[i] = score.scoreSame[i];
+			}
+			else{
+				inte_score.scoreSame[i] = inte_score.scoreSame[i - 1] + score.scoreSame[i];
+			}
 		}
 
-		inte.frr_inte[0] = score.scoreSame[0] / (countS * 1.0);
-		for (int i = 1; i < 101; i++) {
-			inte.frr_inte[i] = inte.frr_inte[i - 1] + score.scoreSame[i] / (countS * 1.0);
+		for (int i = 100; i >= 0; i--) {
+			if (i == 100){
+				inte_score.scoreDiff[i] = score.scoreDiff[i];
+			}
+			else{
+				inte_score.scoreDiff[i] = inte_score.scoreDiff[i + 1] + score.scoreDiff[i];
+			}
 		}
 
-		inte.far_inte[100] = score.scoreDiff[100] / (countD * 1.0);
-		for (int i = 99; i >= 0; i--) {
-			inte.far_inte[i] = inte.far_inte[i + 1] + score.scoreDiff[i] / (countD * 1.0);
+		for (int i = 0; i < 101; i++){
+			inte.frr_inte[i] = inte_score.scoreSame[i]*1.0 / inte_score.scoreSame[100];
+			inte.far_inte[i] = inte_score.scoreDiff[i] * 1.0 / inte_score.scoreDiff[0];
 		}
 	}
 
+	/*if read double value from file, may be loss precision*/
 	static void GetFarFrr(const Integral& inte, FarFrr& farfrr){
 		int x1 = 0, x2 = 0;
 		for (int i = 0; i < 101; i++) {
@@ -122,7 +133,7 @@ namespace farfrr{
 	}
 
 	static std::string ScoreToStr(const Score& score){
-		std::string str;
+		std::string str = "i same diff\r\n";
 		for (int i = 0; i < 101; i++){
 			str += utils::StrFormat("%d %s %s\r\n", i, Int64ToStr(score.scoreSame[i]).c_str(), 
 				Int64ToStr(score.scoreDiff[i]).c_str());
@@ -130,19 +141,30 @@ namespace farfrr{
 		return str;
 	}
 
+	/*if read double value from file, may be loss precision*/
 	static std::string IntegralToStr(const Integral& inte){
-		std::string str;
+		std::string str = "i frr far\r\n";
 		for (int i = 0; i < 101; i++){
-			str += utils::StrFormat("%d %f %f\r\n", i, inte.frr_inte[i], inte.far_inte[i]);
+			str += utils::StrFormat("%d %.10f %.10f\r\n", i, inte.frr_inte[i], inte.far_inte[i]);
 		}
 		return str;
 	}
 
+	/*if read double value from file, may be loss precision*/
+	static std::string IntegralToCsv(const Integral& inte){
+		std::string str = "i,far,frr\r\n";
+		for (int i = 0; i < 101; i++){
+			str += utils::StrFormat("%d,%.10f,%.10f\r\n", i, inte.far_inte[i], inte.frr_inte[i]);
+		}
+		return str;
+	}
+
+	/*if read double value from file, may be loss precision*/
 	static std::string FarfrrToStr(const FarFrr& farfrr){
-		std::string str = utils::StrFormat("score = %f, err = %.8f \r\n", farfrr.score, farfrr.err);
+		std::string str = utils::StrFormat("score = %.10f, err = %.10f \r\n", farfrr.score, farfrr.err);
 		double farL[5] = { 0.0001, 0.00001, 0.000001, 0.0000001, 0 };
 		for (int iL = 0; iL < 5; iL++){
-			str += utils::StrFormat("far = %.8f, frr = %.8f, score = %.8f \r\n",
+			str += utils::StrFormat("far = %.10f, frr = %.10f, score = %.10f \r\n",
 				farL[iL], farfrr.frrL[iL], farfrr.frrS[iL]);
 		}
 		return str;
