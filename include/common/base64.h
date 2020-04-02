@@ -3,15 +3,17 @@
 
 #include <string>
 
-typedef std::string bytes;
-
 class base64 
 {
 public:
 
-	static bytes encode(const bytes& source);
+	static void encode(const unsigned char* source, int source_length, 
+		char* target, int* target_length);
+	static std::string encode(const std::string& source);
 
-	static bool decode(const bytes& source, bytes& target);
+	static bool decode(const char* source, int source_length,
+		unsigned char* target, int* target_length);
+	static bool decode(const std::string& source, std::string& target);
 
 private:
 		base64();
@@ -41,60 +43,73 @@ char base64::Base64Code[64] =
 			'4','5','6','7','8','9','+','/'
 		};
 
-
-bytes base64::encode(const bytes& source)
+void base64::encode(const unsigned char* source, int length, char* target, int* target_length)
 {
-	int num = source.length() / 3;
-	int rest = source.length() % 3;
-	int i=0;
-	unsigned char byte1,byte2,byte3;
+	int num = length / 3;
+	int rest = length % 3;
+	int i = 0;
+	unsigned char byte1, byte2, byte3;
 	char chs[4];
 
-	bytes result;
-	result.resize((num + 1) * 4 + 1, 0);
-
-	for (;i<num;i++)
-	{
-		byte1 = source[i*3];
-		byte2 = source[i*3+1];
-		byte3 = source[i*3+2];
-
-		chs[0] = Base64Code[(byte1>>2)];
-		chs[1] = Base64Code[((byte1 & 0x3)<<4)+(byte2>>4)];
-		chs[2] = Base64Code[((byte2 & 0xf)<<2)+(byte3>>6)];
-		chs[3] = Base64Code[(byte3 & 0x3f)];
-		memcpy((void*)(result.c_str() + i * 4), chs, sizeof(chs));
+	//bytes result;
+	//result.resize((num + 1) * 4 + 1, 0);
+	*target_length = (num + 1) * 4 + 1;
+	if (target == NULL){//only get need space
+		return;
 	}
-	if(rest==1)
+
+	for (; i < num; i++)
 	{
-		byte1 = source[i*3];
-		chs[0] = Base64Code[byte1>>2];
-		chs[1] = Base64Code[(byte1&0x3)<<4];
+		byte1 = source[i * 3];
+		byte2 = source[i * 3 + 1];
+		byte3 = source[i * 3 + 2];
+
+		chs[0] = Base64Code[(byte1 >> 2)];
+		chs[1] = Base64Code[((byte1 & 0x3) << 4) + (byte2 >> 4)];
+		chs[2] = Base64Code[((byte2 & 0xf) << 2) + (byte3 >> 6)];
+		chs[3] = Base64Code[(byte3 & 0x3f)];
+		memcpy(target + i * 4, chs, sizeof(chs));
+	}
+	if (rest == 1)
+	{
+		byte1 = source[i * 3];
+		chs[0] = Base64Code[byte1 >> 2];
+		chs[1] = Base64Code[(byte1 & 0x3) << 4];
 		chs[2] = '=';
 		chs[3] = '=';
-		memcpy((void*)(result.c_str() + i * 4), chs, sizeof(chs));
+		memcpy(target + i * 4, chs, sizeof(chs));
 	}
-	if(rest==2)
+	if (rest == 2)
 	{
-		byte1 = source[i*3];
-		byte2 = source[i*3+1];
-		chs[0] = Base64Code[byte1>>2];
-		chs[1] = Base64Code[((byte1&0x3)<<4)+(byte2>>4)];
-		chs[2] = Base64Code[(unsigned char)((source[i*3+1]&0xf)<<2)];
+		byte1 = source[i * 3];
+		byte2 = source[i * 3 + 1];
+		chs[0] = Base64Code[byte1 >> 2];
+		chs[1] = Base64Code[((byte1 & 0x3) << 4) + (byte2 >> 4)];
+		chs[2] = Base64Code[(unsigned char)((source[i * 3 + 1] & 0xf) << 2)];
 		chs[3] = '=';
-		memcpy((void*)(result.c_str() + i * 4), chs, sizeof(chs));
+		memcpy(target + i * 4, chs, sizeof(chs));
 	}
 
-	return bytes(result.c_str());
+	target[*target_length - 1] = 0;//char end
 }
 
-bool base64::decode(const bytes& source, bytes& target)
+std::string base64::encode(const std::string& source)
 {
-	size_t sourceLength = source.length();
+	int target_length = 0;
+	encode((unsigned char*)source.c_str(), source.length(), NULL, &target_length);
 
-	bytes temp;
+	std::string target;
+	target.resize(target_length);
+	target[target_length - 1] = 0;
+	encode((unsigned char*)source.c_str(), source.length(), (char*)target.c_str(), &target_length);
 
-	temp.resize(sourceLength, 0);
+	return target;
+}
+
+bool base64::decode(const char* source, int source_length,
+	unsigned char* target, int* target_length)
+{
+	size_t sourceLength = source_length;
 
 	if(sourceLength < 4 || sourceLength % 4)
 		return false;
@@ -119,30 +134,37 @@ bool base64::decode(const bytes& source, bytes& target)
 		byte3 = Base64Index(source[i*4+2]);
 		byte4 = Base64Index(source[i*4+3]);
 
-		temp[destIndex++] = (byte1<<2)+(byte2>>4);
-		temp[destIndex++] = (byte2<<4)+(byte3>>2);
-		temp[destIndex++] = (byte3<<6)+byte4;
+		target[destIndex++] = (byte1 << 2) + (byte2 >> 4);
+		target[destIndex++] = (byte2 << 4) + (byte3 >> 2);
+		target[destIndex++] = (byte3 << 6) + byte4;
 	}
 	if(eNum==1)
 	{
 		byte1  = Base64Index(source[i*4]);
 		byte2 = Base64Index(source[i*4+1]);
 		byte3 = Base64Index(source[i*4+2]);
-		temp[destIndex++] = (byte1<<2)+(byte2>>4);
-		temp[destIndex++] = ((byte2&0xf)<<4)+(byte3>>2);
+		target[destIndex++] = (byte1 << 2) + (byte2 >> 4);
+		target[destIndex++] = ((byte2 & 0xf) << 4) + (byte3 >> 2);
 	}
 	if(eNum==2)
 	{
 		byte1  = Base64Index(source[i*4]);
 		byte2 = Base64Index(source[i*4+1]);
-		temp[destIndex++] = (byte1<<2)+(byte2>>4);
+		target[destIndex++] = (byte1 << 2) + (byte2 >> 4);
 	}
 
+	*target_length = destIndex;
 
-	target.resize(destIndex, 0);
+	return true;
+}
 
-	memcpy((void*)target.c_str(), temp.c_str(), target.length());
-
+bool base64::decode(const std::string& source, std::string& target){
+	int target_length = source.length() * 3 / 4;
+	target.resize(target_length);
+	if (!decode(source.c_str(), source.length(), (unsigned char*)target.c_str(), &target_length)){
+		return false;
+	}
+	target.resize(target_length);
 	return true;
 }
 

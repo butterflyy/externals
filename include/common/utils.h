@@ -612,7 +612,7 @@ static std::string StrFormat(const char* format, ...) {
         assert(false);
     }
 
-    return buff;
+    return std::string(buff);
 }
 
 /*
