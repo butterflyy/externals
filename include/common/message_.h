@@ -11,6 +11,7 @@
 #endif
 
 namespace utils{
+	//max output buff 1024byte
 	inline void OutputDebug(const char* format, ...){
 		assert(format);
 		char buff[1024] = { 0 };
@@ -22,6 +23,26 @@ namespace utils{
 		if (len == -1) {
 			assert(false);
 		}
+#ifdef WIN32
+		OutputDebugStringA(buff);
+#endif
+		printf(buff);
+	}
+
+	//max output buff 1024byte
+	inline void OutputDebugLn(const char* format, ...){
+		assert(format);
+		char buff[1024] = { 0 };
+		va_list va;
+		va_start(va, format);
+		int len = vsnprintf(buff, 1024 - 1, format, va);
+		va_end(va);
+
+		if (len == -1) {
+			assert(false);
+		}
+
+		strcat(buff, "\r\n");
 #ifdef WIN32
 		OutputDebugStringA(buff);
 #endif
