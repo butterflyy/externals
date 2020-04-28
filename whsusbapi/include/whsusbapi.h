@@ -36,7 +36,7 @@
 * whsusbapi 库版本号 
 * 头文件声明的库版本号， 通过 HS_GetLibVersion 接口获取实际加载库的版本号。
 */
-#define WHSUSBAPI_VERSION "4.5.8"
+#define WHSUSBAPI_VERSION "4.5.9"
 
 #ifdef __cplusplus
 extern "C" {
@@ -149,6 +149,15 @@ enum hs_eye_type {
     HS_RIGHT_EYE = 0x04,
 };
 
+/* 比对模式 */
+enum hs_match_mode{
+	/** 只比对一次, 成功或者失败后返回，调用 HS_StopMatch 可以结束比对过程 */
+	HS_MATCH_ONCE = 0x01,
+
+	/** 连续比对模式 , 只有比对成功后, 才会返回，只对不设置模板A的比对模式有效，调用 HS_StopMatch 可以结束比对过程 */
+	HS_MATCH_CONTINUOUS = 0x02,
+};
+
 /**
 * 描述： 设备成功接入或者断开后，触发此事件回调。
 * 参数： index 设备序列号，当新的设备接入时，由于还没有分配设备资源，序列号为-1。
@@ -192,6 +201,7 @@ typedef void(CALLBACK* image_callback)(int index, int type,
 * 参数： id_array 比对数据ID集合，配合 HS_MatchIdClips 获取具体的ID数据。
 * 参数： size 比对ID数据中ID个数，配合 HS_MatchIdClips 获取具体的ID数据。
 * 参数： result 比对结果，true 成功，false 失败，为true的时候，id_array 和 size 参数才有意义。
+* 注意： 返回的id列表是去重的, 并且是按照比对分数由高到低进行排序, 所以比对最高分就是第一个id。
 */
 typedef void(CALLBACK* match_callback)(int index, const void* id_array, int size, bool result);
 
@@ -431,7 +441,7 @@ WHSUSB_API void WINAPI HS_ReleaseMatchRecord(MATCH_RECORD record);
 *        另一种模式是不设置模板A，那么需要采集用户模板，然后和模板B进行比对。
 *        比对过程中，如果调用 HS_StartCapture 或者 HS_SetVideoEnabled 会返回失败（设备忙）。
 * 参数： index 设备序列号。
-* 参数： mode 比对模式（已废弃，设置任意值即可）。
+* 参数： mode 比对模式， 参考 hs_match_mode， 连续比对模式 HS_MATCH_CONTINUOUS 只对不设置模板A的模式有效。
 * 参数： record 比对数据集合的指针。
 * 返回： 0 成功，其他值失败，参考 hs_device_error_code。
 */

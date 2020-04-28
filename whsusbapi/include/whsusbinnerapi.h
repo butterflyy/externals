@@ -49,6 +49,8 @@ struct DeviceInfo {
 	byte AESKEY[32];
     bool KEY_enable;
 	hs_video_offset video_offset;
+	uint16 device_model;
+	uint32 device_serial;
 };
 
 
@@ -358,7 +360,7 @@ WHSUSB_API const char* WINAPI HS_GetDllDir();
 
 WHSUSB_API int WINAPI HS_ConfigSetPath(bool enabled, const char* path);
 
-//是否使用老的左右眼类型，和新版本的左右眼相反
+//是否使用老的左右眼类型，和新版本的左右眼相反（已废弃）
 WHSUSB_API int WINAPI HS_ConfigSetOldEyetypeEnabled(bool enabled);
 
 //HS_IMAGE_UPPER_LOW = 0,
@@ -369,7 +371,8 @@ WHSUSB_API int WINAPI HS_ConfigSetCaptureImageQuality(int quality);
 WHSUSB_API int WINAPI HS_ConfigSetMatchImageQuality(int quality);
 WHSUSB_API int WINAPI HS_ConfigSetEncodeImageQuality(int quality);
 
-WHSUSB_API int WINAPI HS_LogInfo(const char* info);
+//const int INFO = 0, WARNING = 1, ERROR = 2, FATAL = 3
+WHSUSB_API int WINAPI HS_LogInfo(int level, const char* info);
 
 
 //升级进度回调函数
@@ -399,9 +402,41 @@ WHSUSB_API int WINAPI HS_DebugVideoAdjustOffset(int index, hs_video_offset offse
 
 WHSUSB_API int WINAPI HS_SetVideoAdjustOffset(int index, hs_video_offset offset);
 
+//Device model,  1 C20e ; 2 C20b ; 3 C21;  4 C41  other undefined
+WHSUSB_API int WINAPI HS_GetDeviceModel(int index);
+WHSUSB_API int WINAPI HS_SetDeviceModel(int index, int model);
+
+WHSUSB_API int WINAPI HS_GetDeviceSerial(int index);
+WHSUSB_API int WINAPI HS_SetDeviceSerial(int index, int serial);
 
 //读取fpga flash中可配置参数。
 WHSUSB_API int WINAPI HS_ReadBinParam(int index, byte* data, int size);
+
+
+
+/**
+* @brief:  Write raw bmp data to file.
+* @method:  HS_WriteBmpData
+* @param: const char * path
+* @param: const byte * image_ptr
+* @param: int width
+* @param: int height
+* @return:   WHSUSB_API int WINAPI
+*/
+WHSUSB_API int WINAPI HS_WriteBmpData(const char* path, const byte* image_ptr, int width, int height);
+
+
+/**
+* @brief:    Read bmp raw data from file.
+* @method:  HS_ReadBmpData
+* @param: const char * path
+* @param: byte * image_ptr
+* @param: int size
+* @param: int * width
+* @param: int * height
+* @return:   WHSUSB_API int WINAPI
+*/
+WHSUSB_API int WINAPI HS_ReadBmpData(const char* path, byte* image_ptr, int size, int* width, int* height);
 
 //========================================================
 #ifdef WIN32
@@ -435,8 +470,12 @@ WHSUSB_API void WINAPI HS_VideoRead(int index, char* outmsg);
 
 #endif
 
-
 #ifdef __ANDROID__
+//check android verion is root.
+WHSUSB_API bool WINAPI HS_IsRootVersion();
+#endif
+
+#ifdef __ANDROID__ 
 
 struct libusb_device_handle;
 
@@ -462,7 +501,6 @@ WHSUSB_API int WINAPI HS_RemoveAll();
 WHSUSB_API int WINAPI HS_OpenDevice(int index);
 
 WHSUSB_API int WINAPI HS_CloseDevice(int index);
-	
 #endif
 
 #ifdef __cplusplus
