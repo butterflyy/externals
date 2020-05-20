@@ -304,6 +304,88 @@ private:
 };
 
 /*
+* @brief C++ 11 simple auto ptr
+*/
+template<class _Ty>
+class auto_ptr : NoCopy
+{	// wrap an object pointer to ensure destruction
+public:
+	typedef auto_ptr<_Ty> _Myt;
+	typedef _Ty element_type;
+
+	explicit auto_ptr(_Ty *_Ptr = 0)
+		: _Myptr(_Ptr)
+	{	// construct from object pointer
+	}
+
+
+	~auto_ptr()
+	{	// destroy the object
+		delete _Myptr;
+	}
+
+	_Ty& operator*() const
+	{	// return designated value
+		return (*get());
+	}
+
+	_Ty *operator->() const
+	{	// return pointer to class object
+		return (get());
+	}
+
+	_Ty *get() const
+	{	// return wrapped pointer
+		return (_Myptr);
+	}
+private:
+	_Ty *_Myptr;	// the wrapped object pointer
+};
+
+
+/*
+* @brief C++ 11 simple auto array ptr
+*/
+template<class _Ty>
+class auto_array_ptr : NoCopy
+{	// wrap an object pointer to ensure destruction
+public:
+	typedef auto_array_ptr<_Ty> _Myt;
+	typedef _Ty element_type;
+
+	explicit auto_array_ptr(_Ty *_Ptr = 0)
+		: _Myptr(_Ptr)
+	{	// construct from object pointer
+	}
+
+
+	~auto_array_ptr()
+	{	// destroy the object
+		delete[] _Myptr;
+	}
+
+	_Ty& operator*() const
+	{	// return designated value
+		return (*get());
+	}
+
+	_Ty *operator->() const
+	{	// return pointer to class object
+		return (get());
+	}
+
+	_Ty& operator[](size_t pos) const {
+		return _Myptr[pos];
+	}
+
+	_Ty *get() const
+	{	// return wrapped pointer
+		return (_Myptr);
+	}
+private:
+	_Ty *_Myptr;	// the wrapped object pointer
+};
+/*
 * @brief Safely Buffer
 */
 class Buffer {

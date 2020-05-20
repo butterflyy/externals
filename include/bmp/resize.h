@@ -50,7 +50,7 @@ namespace bmp{
 	//src (small image), des(big image 640*480 or 768*768)
 	static void CopyMiddle(const unsigned char *src, int src_width, int src_height,
 		unsigned char *des, int des_width, int des_height, unsigned char fillcolor = 0x0/* or 0x7F*/){
-		assert(src_width < des_width && src_height < des_height);
+		assert(src_width <= des_width && src_height <= des_height);
 
 		memset(des, fillcolor, des_width*des_height);
 		int less_width = (des_width - src_width) / 2;
