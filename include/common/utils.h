@@ -478,7 +478,7 @@ static bool CheckFileExist(const std::string& path) {
 * @param path file path
 * @return -1 failed, others succeeded
 */
-static std::streamsize GetFileSize(const std::string& path) {
+static int GetFileSize(const std::string& path) {
     std::ifstream file(path.c_str(), std::ios_base::binary);
 
     if (!file.good()) {
@@ -486,7 +486,7 @@ static std::streamsize GetFileSize(const std::string& path) {
     }
 
     file.seekg(0, std::ios_base::end);
-    std::streamsize size = file.tellg();
+    int size = (int)file.tellg();
     file.close();
     return size;
 }
@@ -536,6 +536,11 @@ static int ReadFile(const std::string& path, byte** pbuff) {
 * @return -1 failed, others file size succeeded
 */
 static int ReadFile(const std::string& path, Buffer& buffer) {
+	if (buffer.empty()){
+		int size = GetFileSize(path);
+		if (size < 0) return size;
+		buffer.resize(size);
+	}
 	return ReadFile(path, buffer.data(), (int)buffer.size());
 }
 

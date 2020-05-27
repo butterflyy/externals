@@ -26,7 +26,7 @@ int EasyUsb::Encode(const std::string& path, byte* template_ptr, int length, str
 	int width = 768;
 	int height = 768;
 	utils::Buffer imagebuf(width* height);
-	int size = bmp::ReadData(path, imagebuf.data(), imagebuf.size(), &width, &height);
+	int size = bmp::ReadData(path, imagebuf.data(), imagebuf.size(), width, height);
 	if (size < 0){
 		_err = "Read image data failed";
 		return -1;
