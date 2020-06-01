@@ -15,11 +15,10 @@
 
 class EasyMatchBox{
 public:
-	const int TMP_SIZE = 8192;
-
 	struct template_info{
 		int index;
 		byte* tmpl;
+		int size;
 	};
 
 	struct match_result {
@@ -36,6 +35,8 @@ public:
 	int DeviceSize() const{
 		return _devices.size();
 	}
+
+	int TmplSize();
 
 	int Download(int index, whscom_ddr ddr, const std::vector<template_info>& infos);
 	

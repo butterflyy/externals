@@ -28,6 +28,8 @@ public:
 		return _deviceSize;
 	}
 
+	int TmplSize();
+
 	int Encode(const byte* image_ptr, int width, int height,
 		byte* template_ptr, int length, struct hs_encode_param* param);
 

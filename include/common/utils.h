@@ -113,10 +113,21 @@ safeArrayDelete(T*& pointer) {
 
 
 /*
+* @brief Simple lazy singleton.
+* warning: this is NOT a thread safe implementation
+*/
+template <typename T> 
+class singleton {
+public:
+	static T& instance() {
+		static T theSingleInstance;
+		return theSingleInstance;
+	}
+};
+
+/*
 * @brief Simple thread that using std::thread or pthread
 */
-
-
 class Thread : NoCopy {
 public:
     Thread() : _quit(false), _isRunning(false) {}

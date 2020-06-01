@@ -35,12 +35,17 @@ EasyMatchBox::~EasyMatchBox()
 	WHSCOM_Finalize();
 }
 
+int EasyMatchBox::TmplSize(){
+	return 8192;
+}
+
+
 int EasyMatchBox::Download(int index, whscom_ddr ddr, const std::vector<template_info>& infos)
 {
 	whscom_template_record record = WHSCOM_CreateTemplateRecord();
 	for each (auto var in infos)
 	{
-		int ret = WHSCOM_AddTemplate(record, var.index, var.tmpl, TMP_SIZE);
+		int ret = WHSCOM_AddTemplate(record, var.index, var.tmpl, var.size);
 		if (ret < 0){
 			_err = "add template failed";
 			return -1;
@@ -61,14 +66,14 @@ int EasyMatchBox::Match(int index, whscom_ddr ddr, const std::string& tmpl1, con
 {
 	whscom_template_record record = WHSCOM_CreateTemplateRecord();
 	//add one
-	utils::Buffer tmpl(TMP_SIZE);
+	utils::Buffer tmpl;
 	int size = utils::ReadFile(tmpl1, tmpl);
-	if (size != TMP_SIZE){
+	if (size <= 0){
 		_err = "read tmpl1 failed";
 		return -1;
 	}
 
-	int ret = WHSCOM_AddTemplate(record, 0, tmpl.data(), TMP_SIZE);
+	int ret = WHSCOM_AddTemplate(record, 0, tmpl.data(), tmpl.size());
 	if (ret < 0){
 		_err = "add tmpl1 failed";
 		return -1;
@@ -79,12 +84,12 @@ int EasyMatchBox::Match(int index, whscom_ddr ddr, const std::string& tmpl1, con
 	for each (auto var in tmplsN)
 	{
 		size = utils::ReadFile(var, tmpl);
-		if (size != TMP_SIZE){
+		if (size <= 0){
 			_err = "read tmplN failed";
 			return -1;
 		}
 
-		int ret = WHSCOM_AddTemplate(record, index++, tmpl.data(), TMP_SIZE);
+		int ret = WHSCOM_AddTemplate(record, index++, tmpl.data(), tmpl.size());
 		if (ret < 0){
 			_err = "add tmplN failed";
 			return -1;

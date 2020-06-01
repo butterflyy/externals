@@ -16,6 +16,10 @@ EasyUsb::~EasyUsb()
 	HS_Finalize();
 }
 
+int EasyUsb::TmplSize(){
+	return HS_GetTemplateSize(0);
+}
+
 int EasyUsb::Encode(const byte* image_ptr, int width, int height, byte* template_ptr, int length, struct hs_encode_param* param)
 {
 	return HS_Encode2(0, image_ptr, width, height, template_ptr, length, param);
@@ -47,27 +51,26 @@ int EasyUsb::Encode(const std::string& path, byte* template_ptr, int length, str
 
 int EasyUsb::Match(int index, const std::string& tmpl1, const std::vector<std::string>& tmplsN, std::vector<match_result>& results)
 {
-	const int TMP_SIZE = 8192;
-	utils::Buffer tmpl(TMP_SIZE);
+	utils::Buffer tmpl;
 	int size = utils::ReadFile(tmpl1, tmpl);
-	if (size != TMP_SIZE){
+	if (size <= 0){
 		_err = "read tmpl1 failed";
 		return -1;
 	}
 
 	MATCH_RECORD record = HS_CreateMatchRecord();
-	int ret = HS_SetTemplateA(record, tmpl.data(), TMP_SIZE);
+	int ret = HS_SetTemplateA(record, tmpl.data(), tmpl.size());
 	if (ret < 0){
 		return -1;
 	}
 	for (int i = 0; i < tmplsN.size(); i++){
 		size = utils::ReadFile(tmplsN[i], tmpl);
-		if (size != TMP_SIZE){
+		if (size <= 0){
 			_err = "read tmplN failed";
 			return -1;
 		}
 
-		int ret = HS_InsertTemplateB(record, tmpl.data(), TMP_SIZE, "");
+		int ret = HS_InsertTemplateB(record, tmpl.data(), tmpl.size(), "");
 		if (ret < 0){
 			return -1;
 		}
