@@ -98,6 +98,7 @@ int EasyUsb::Match(int index, const std::string& tmpl1, const std::vector<std::s
 		res.angle = HS_MatchResultAngle(result, i);
 		res.valnm = HS_MatchResultValnm(result, i);
 
+		matchResultNormalization(res);
 		results.push_back(res);
 	}
 
@@ -122,6 +123,7 @@ int EasyUsb::Match(int index, MATCH_RECORD record, std::vector<match_result>& re
 		res.angle = HS_MatchResultAngle(result, i);
 		res.valnm = HS_MatchResultValnm(result, i);
 
+		matchResultNormalization(res);
 		results.push_back(res);
 	}
 
@@ -215,3 +217,16 @@ param->flag.warn3_flag
 );
 		return std::string(param_buff);
 	}
+
+void EasyUsb::matchResultNormalization(match_result& result){
+	//trans match result to 0-100
+	if (TmplSize() == 2048){ //2K tmpl
+		result.score = result.score * 100.0 / 4096 + 0.5;
+		result.valnm = result.valnm * 100.0 / 4096 + 0.5;
+	}
+	else{
+		result.score = result.score * 100.0 / 16384 + 0.5;
+		result.angle = result.angle * 100.0 / 16384 + 0.5;
+		result.valnm = result.valnm * 100.0 / 16384 + 0.5;
+	}
+}

@@ -124,6 +124,7 @@ int EasyMatchBox::Match(int index, whscom_ddr ddr, int begin, int end, std::vect
 			result.angle = results_angle[i];
 			result.valnm = results_valnm[i];
 
+			matchResultNormalization(result);
 			results.push_back(result);
 		}
 	}
@@ -140,3 +141,15 @@ int EasyMatchBox::Match(int index, whscom_ddr ddr, int begin, int end, std::vect
 	return 0;
 }
 
+void EasyMatchBox::matchResultNormalization(match_result& result){
+	//trans match result to 0-100
+	if (TmplSize() == 2048){ //2K tmpl
+		result.score = result.score * 100.0 / 4096 + 0.5;
+		result.valnm = result.valnm * 100.0 / 4096 + 0.5;
+	}
+	else{
+		result.score = result.score * 100.0 / 16384 + 0.5;
+		result.angle = result.angle * 100.0 / 16384 + 0.5;
+		result.valnm = result.valnm * 100.0 / 16384 + 0.5;
+	}
+}

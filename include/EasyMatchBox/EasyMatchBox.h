@@ -63,6 +63,8 @@ private:
 	whscom_device_handle deviceHandle(int index){
 		return _devices[index].first;
 	}
+
+	void matchResultNormalization(match_result& result);
 private:
 	std::string _err;
 

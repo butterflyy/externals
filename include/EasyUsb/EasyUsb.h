@@ -49,6 +49,9 @@ public:
 		return _err;
 	}
 private:
+	void matchResultNormalization(match_result& result);
+
+private:
 	std::string _err;
 
 	int _deviceSize;
