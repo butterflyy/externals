@@ -487,17 +487,15 @@ public:
 
     bool operator==(const Buffer& right) const {
         if (_size == right.size()) {
-            for (size_t i = 0; i < _size; i++) {
-                if ((*this)[i] != right[i]) {
-                    return false;
-                }
-            }
-
-            return true;
+			return (memcmp(_data, right.data(), _size) == 0);
         }
 
         return false;
     }
+
+	bool operator!=(const Buffer& right) const {
+		return !(*this == right);
+	}
 
 private:
     void allocBuffer(size_t size) {
