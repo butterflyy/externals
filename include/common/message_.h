@@ -26,7 +26,7 @@ namespace utils{
 #ifdef WIN32
 		OutputDebugStringA(buff);
 #endif
-		printf(buff);
+		printf("%s", buff);
 	}
 
 	//max output buff 1024byte
@@ -46,14 +46,14 @@ namespace utils{
 #ifdef WIN32
 		OutputDebugStringA(buff);
 #endif
-		printf(buff);
+		printf("%s", buff);
 	}
 
 	inline void ShowMessageG(const std::string& msg){
 #ifdef WIN32
 		::MessageBoxA(NULL, msg.c_str(), "message", MB_OK);
 #else
-		printf(msg.c_str());
+		printf("%s", msg.c_str());
 #endif
 	}
 }
