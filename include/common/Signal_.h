@@ -18,7 +18,7 @@ public:
 	Signal()
 	:_bWaiting(false){
 #ifdef WIN32
-		_handle = CreateEvent(NULL, TRUE, FALSE, NULL);
+		_handle = CreateEventA(NULL, TRUE, FALSE, NULL);
 		assert(_handle);
 #else
 		int ret = pthread_cond_init(&_cond, NULL);

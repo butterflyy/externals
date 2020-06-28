@@ -36,7 +36,7 @@ public:
 	}
 
 	//data out return waiting data
-	//return 0 success 1 timeout -1 error -2 already has id
+	//return 0 success, 1 timeout, -1 error, -2 already has id
 	int WaitEvent(SID id, Data* data, int timeout = -1){
 		_mutex.lock();
 		if (find(id)){
@@ -70,7 +70,7 @@ public:
 	}
 
 	//data set return waiting data
-	//return 0 success 1 timeout -1 error  -2 do not has id
+	//return 0 success, -1 error,  -2 do not has id
 	int SetEvent(SID id, Data data){
 		_mutex.lock();
 		if (!find(id)){
