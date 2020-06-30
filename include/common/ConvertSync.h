@@ -28,7 +28,7 @@ public:
 	}
 
 	~ConvertSync(){
-		for (SignalMap::const_iterator it = _eventMap.begin();
+		for (typename SignalMap::const_iterator it = _eventMap.begin();
 			it != _eventMap.end();
 			++it){
 			delete it->second.pSignal;
@@ -87,7 +87,7 @@ public:
 
 private:
 	bool find(SID id){
-		SignalMap::const_iterator it = _eventMap.find(id);
+		typename SignalMap::const_iterator it = _eventMap.find(id);
 		if (it == _eventMap.end()){
 			return false;
 		}
