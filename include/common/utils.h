@@ -130,8 +130,37 @@ public:
 */
 class Thread : NoCopy {
 public:
-    Thread() : _quit(false), _isRunning(false) {}
-    virtual ~Thread() {}
+    Thread() : 
+		_quit(false),
+		_isRunning(false),
+#ifdef ENABLE_C11
+		_thread(nullptr)
+#else
+		_thread_t(nullptr)
+#endif
+	{}
+    virtual ~Thread() {
+#ifdef ENABLE_C11
+		if (_thread){
+			try{
+				if (_thread->joinable()){
+					_thread->join();//delete thread waiting thread over
+				}
+			}
+			catch (...){
+				//avoid exception;
+			}
+
+			delete _thread;
+		}
+#else
+		if(_thread_t){
+			void* threadResult = 0; // Dummy var.
+			pthread_join(_thread_t, &threadResult);//delete thread waiting thread over
+			_thread_t = nullptr;
+		}
+#endif
+	}
 
     /*
     * @brief Start thread
@@ -145,35 +174,26 @@ public:
         }
 
         _quit = false;
+
+		_isRunning = true;
+
 #ifdef ENABLE_C11
-        std::thread thd(&Thread::work_thread, this);
-
-        if (isJoin) {
-            thd.join();
-        } else {
-            thd.detach();
-        }
-
+		try{
+			_thread = new std::thread(&Thread::work_thread, this);
+			if (!_thread){
+				_isRunning = false;
+				return -2;
+			}
+		}
+		catch (...){
+			_isRunning = false;
+			return -2;
+		}
 #else
         int ret = pthread_create(&_thread_t, NULL, work_thread, (void*)this);
-
         if (ret != 0) {
+			_isRunning = false;
             return -2;
-        }
-
-        if (isJoin) {
-            void* threadResult = 0; // Dummy var.
-            ret = pthread_join(_thread_t, &threadResult);
-
-            if (ret != 0) {
-                return -3;
-            }
-        } else {
-            ret = pthread_detach(_thread_t);
-
-            if (ret != 0) {
-                return -4;
-            }
         }
 
 #endif
@@ -219,8 +239,13 @@ protected:
 private:
 #ifdef ENABLE_C11
     void work_thread() {
-        _isRunning = true;
-        run();
+		try{
+			run();
+		}
+		catch(...){
+			//avoid exception;
+		}
+
         _isRunning = false;
     }
 #else
@@ -237,6 +262,8 @@ private:
     std::atomic<bool> _quit;
 
     std::atomic<bool> _isRunning;
+
+	std::thread* _thread;
 #else
     volatile bool _quit;
 
