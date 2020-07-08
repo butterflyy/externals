@@ -874,12 +874,14 @@ static std::string Trim(const std::string& str)
 }
 
 inline void SafeStrCpy(char* dest, const char* source, size_t maxsize){
-	if (strlen(source) >= maxsize){
+	int slen = strlen(source);
+	if (slen >= maxsize){
 		memcpy(dest, source, maxsize - 1);
 		dest[maxsize - 1] = 0;
 	}
 	else{
 		strcpy(dest, source);
+		dest[slen] = 0;
 	}
 }
 
