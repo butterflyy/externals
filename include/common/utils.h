@@ -164,11 +164,10 @@ public:
 
     /*
     * @brief Start thread
-    * @param isJoin run join or detach, default is detach
     * @return 0 succeeded, -1 thread already running, or other error code.
 	* @problem thread is start last.
     */
-    int start(bool isJoin = false) {
+    int start() {
         if (_isRunning) {
             return -1;
         }
