@@ -44,10 +44,6 @@ public:
 		struct timeval end;
 		memset(&end, 0, sizeof(struct timeval));
 		gettimeofday(&end, NULL);
-		if (end.tv_usec < start.tv_usec){
-			end.tv_usec += 1000;
-			end.tv_sec = end.tv_sec - 1;
-		}
 		int duration = (end.tv_sec - start.tv_sec)*1000 + (end.tv_usec - start.tv_usec) / 1000;
 #endif
 		return duration;
