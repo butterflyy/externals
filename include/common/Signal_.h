@@ -87,14 +87,12 @@ public:
 			return 0;
 		}
 		else if (WAIT_FAILED == dwRet){
-			assert(false);
 			return -1;
 		}
 		else if (WAIT_TIMEOUT == dwRet){
 			return 1;
 		}
 		else{
-			assert(false);
 			return -1;
 		}
 #else

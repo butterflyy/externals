@@ -49,6 +49,22 @@ namespace utils{
 		printf("%s", buff);
 	}
 
+	inline void OutputDebug(const std::string& str){
+#ifdef WIN32
+		OutputDebugStringA(str.c_str());
+#endif
+		printf("%s", str.c_str());
+	}
+
+	inline void OutputDebugLn(const std::string& str){
+		std::string buff = str;
+		buff.append("\r\n");
+#ifdef WIN32
+		OutputDebugStringA(buff.c_str());
+#endif
+		printf("%s", buff.c_str());
+	}
+
 	inline void ShowMessageG(const std::string& msg){
 #ifdef WIN32
 		::MessageBoxA(NULL, msg.c_str(), "message", MB_OK);
