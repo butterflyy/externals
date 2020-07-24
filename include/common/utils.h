@@ -136,30 +136,11 @@ public:
 #ifdef ENABLE_C11
 		_thread(nullptr)
 #else
-		_thread_t(nullptr)
+		_thread_t(0)
 #endif
 	{}
     virtual ~Thread() {
-#ifdef ENABLE_C11
-		if (_thread){
-			try{
-				if (_thread->joinable()){
-					_thread->join();//delete thread waiting thread over
-				}
-			}
-			catch (...){
-				//avoid exception;
-			}
-
-			delete _thread;
-		}
-#else
-		if(_thread_t){
-			void* threadResult = 0; // Dummy var.
-			pthread_join(_thread_t, &threadResult);//delete thread waiting thread over
-			_thread_t = nullptr;
-		}
-#endif
+		ensureThreadOver();
 	}
 
     /*
@@ -171,6 +152,8 @@ public:
         if (_isRunning) {
             return -1;
         }
+
+		ensureThreadOver();// if check is not runing thread, restart again, need ensure therad over.
 
         _quit = false;
 
@@ -191,6 +174,7 @@ public:
 #else
         int ret = pthread_create(&_thread_t, NULL, work_thread, (void*)this);
         if (ret != 0) {
+			_thread_t = 0;
 			_isRunning = false;
             return -2;
         }
@@ -211,9 +195,7 @@ public:
         _quit = true;
 
         if (isWaiting) {
-            while (_isRunning) {
-                msleep(10);
-            }
+			ensureThreadOver();
         }
     }
 
@@ -255,6 +237,31 @@ private:
         pThis->_isRunning = false;
     }
 #endif
+
+	void ensureThreadOver(){
+#ifdef ENABLE_C11
+		if (_thread){
+			try{
+				if (_thread->joinable()){
+					_thread->join();//delete thread waiting thread over
+				}
+			}
+			catch (...){
+				//avoid exception;
+			}
+
+			delete _thread;
+			_thread = nullptr;
+		}
+#else
+		if (_thread_t != 0){
+			void* threadResult = 0; // Dummy var.
+			pthread_join(_thread_t, &threadResult);//delete thread waiting thread over
+			_thread_t = 0;
+		}
+#endif
+	}
+
 private:
 #ifdef ENABLE_C11
     /* @brief Control loop running function quit if used _quit variable to control.*/
