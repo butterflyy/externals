@@ -570,7 +570,7 @@ private:
         _size = 0;
     }
 
-public:
+private:
     byte* _data;
     size_t _size;
 };
