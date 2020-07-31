@@ -457,6 +457,10 @@ public:
         *this = buffer;
     }
 
+	Buffer(Buffer&& buffer) : _data(nullptr), _size(0)  {
+		swap(buffer);
+	}
+
     Buffer(const Buffer* pbuffer) : _data(nullptr), _size(0)  {
         if (!pbuffer) {
             return;
@@ -510,6 +514,12 @@ public:
         return *this;
     }
 
+	Buffer& operator=(Buffer&& right) {
+		swap(right);
+
+		return *this;
+	}
+
     bool empty() const {
         return (!_data && _size == 0);
     }
@@ -528,6 +538,15 @@ public:
 
 	bool operator!=(const Buffer& right) const {
 		return !(*this == right);
+	}
+
+	void swap(Buffer& right){
+		if (this == &right){
+			return;
+		}
+
+		std::swap(this->_data, right._data);
+		std::swap(this->_size, right._size);
 	}
 
 private:
@@ -551,7 +570,7 @@ private:
         _size = 0;
     }
 
-private:
+public:
     byte* _data;
     size_t _size;
 };
