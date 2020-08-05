@@ -295,6 +295,15 @@ WHSUSB_API int WINAPI HS_Encode2(int index, const byte* image_ptr, int width, in
 */
 WHSUSB_API bool WINAPI HS_ReadImageInfo(const byte* image_ptr, struct hs_image_info* info);
 
+/**
+* 描述： 图片编码模板。
+* 参数： index 设备序列号。
+* 参数： image_ptr 眼睛图片数据的指针，图片格式为灰度图片，具体处理过程参考相关示例。
+* 参数： width 图片的宽度。
+* 参数： height 图片的高度。
+* 返回： 大于0成功，  其他值失败，参考 hs_device_error_code。
+*/
+WHSUSB_API int WINAPI HS_GetImageQuality(int index, const byte* image_ptr, int width, int height);
 
 /**
 * 描述： VR灯光控制。
@@ -325,9 +334,10 @@ WHSUSB_API int WINAPI HS_StartCapture2(int index, int eye_count, int mode, bool 
 /**
 * 描述： 强制采集。
 * 参数： index 设备序列号。
+* 参数： eye_count 采集的眼睛个数，-1表示无限制，如果设备为双眼设备，采集的眼睛个数为双眼的个数。
 * 返回： 0 成功，其他值失败，参考 hs_device_error_code。
 */
-WHSUSB_API int WINAPI HS_StartCaptureForce(int index);
+WHSUSB_API int WINAPI HS_StartCaptureForce(int index, int eye_count);
 
 
 /**
