@@ -3,8 +3,8 @@
 #ifndef __CONFIG_BASE_H__
 #define __CONFIG_BASE_H__
 
-#include <common\utils.h>
-#include <common\SimpleIni.h>
+#include <common/utils.h>
+#include <common/SimpleIni.h>
 
 template<typename ConfigData>
 class ConfigBase{
