@@ -46,7 +46,7 @@ public:
 	void Remove(const item_type& item, Deleter d){
 		utils::LockGuard<utils::Mutex> lock(_mutex);
 
-		for (List::iterator it = _items.begin();
+		for (typename List::iterator it = _items.begin();
 			it != _items.end();){
 			if (*it == item){
 				d(*it);
@@ -65,7 +65,7 @@ public:
 
 	bool Has(const item_type& item){
 		utils::LockGuard<utils::Mutex> lock(_mutex);
-		for (List::const_iterator it = _items.begin();
+		for (typename List::const_iterator it = _items.begin();
 			it != _items.end();
 			++it){
 			if (*this == item){
@@ -78,7 +78,7 @@ public:
 	template<typename Deleter>
 	void Clear(Deleter d){
 		utils::LockGuard<utils::Mutex> lock(_mutex);
-		for (List::const_iterator it = _items.begin();
+		for (typename List::iterator it = _items.begin();
 			it != _items.end();
 			++it){
 			d(*it);
@@ -98,7 +98,7 @@ public:
 		}
 		assert(index < _items.size());
 		int i = 0;
-		for (List::iterator it = _items.begin();
+		for (typename List::iterator it = _items.begin();
 			it != _items.end();
 			++it, ++i){
 			if (i == index){
