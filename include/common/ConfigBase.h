@@ -3,6 +3,7 @@
 #ifndef __CONFIG_BASE_H__
 #define __CONFIG_BASE_H__
 
+#include <sstream>
 #include <common\utils.h>
 #include <common\SimpleIni.h>
 
@@ -109,6 +110,18 @@ public:
 
 	std::string errMsg() const{
 		return _err;
+	}
+
+	static std::string MakePath(const std::string& dir, const std::string& name){
+		std::ostringstream str;
+		str << dir;
+#ifdef WIN32
+		str << "\\";
+#else
+		str << "/";
+#endif
+		str << name;
+		return str.str();
 	}
 protected:
 	enum Type{
