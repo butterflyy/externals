@@ -457,9 +457,13 @@ public:
         *this = buffer;
     }
 
+#ifdef ENABLE_C11
+
 	Buffer(Buffer&& buffer) : _data(nullptr), _size(0)  {
 		swap(buffer);
 	}
+
+#endif
 
     Buffer(const Buffer* pbuffer) : _data(nullptr), _size(0)  {
         if (!pbuffer) {
@@ -514,11 +518,15 @@ public:
         return *this;
     }
 
+#ifdef ENABLE_C11
+
 	Buffer& operator=(Buffer&& right) {
 		swap(right);
 
 		return *this;
 	}
+
+#endif
 
     bool empty() const {
         return (!_data && _size == 0);
