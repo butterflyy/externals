@@ -37,10 +37,14 @@ public:
 		_items.push_back(item);
 	}
 
+#ifdef ENABLE_C11
+
 	void Add(const item_type&& item){
 		utils::LockGuard<utils::Mutex> lock(_mutex);
 		_items.push_back(std::move(item));
 	}
+
+#endif
 
 	template<typename Deleter>
 	void Remove(const item_type& item, Deleter d){

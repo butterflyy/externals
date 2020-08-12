@@ -36,7 +36,7 @@ public:
 		int ret = pthread_cond_destroy(&_cond);
 		assert(ret == 0);
 		ret = pthread_mutex_destroy(&_mutex);
-		assert(ret == 0);
+		//assert(ret == 0); //NEEDHAND
 #endif
 	}
 
