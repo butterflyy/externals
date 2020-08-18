@@ -4,6 +4,7 @@
 #define __CONFIG_BASE_H__
 
 #include <sstream>
+#include <typeinfo>
 #include <common/utils.h>
 #include <common/SimpleIni.h>
 
@@ -296,7 +297,7 @@ long mm = SimpleConfig<Data>::instance().Data().mm;
 template<typename ConfigData>
 class SimpleConfig : 
 	public ConfigBase<ConfigData>
-	,public utils::singleton<SimpleConfig<ConfigData>>
+	,public utils::singleton<SimpleConfig<ConfigData> >
 {
 };
 #endif //!__CONFIG_BASE_H__
