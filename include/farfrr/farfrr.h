@@ -161,7 +161,7 @@ namespace farfrr{
 
 	/*if read double value from file, may be loss precision*/
 	static std::string FarfrrToStr(const FarFrr& farfrr){
-		std::string str = utils::StrFormat("score = %.10f, err = %.10f \r\n", farfrr.score, farfrr.err);
+		std::string str = utils::StrFormat("score = %.10f, eer = %.10f \r\n", farfrr.score, farfrr.err);
 		double farL[5] = { 0.0001, 0.00001, 0.000001, 0.0000001, 0 };
 		for (int iL = 0; iL < 5; iL++){
 			str += utils::StrFormat("far = %.10f, frr = %.10f, score = %.10f \r\n",
