@@ -23,7 +23,7 @@ private:
 private:
 	static CreateDump* _pThis;
 
-	std::string _strDumpFile;
+	std::string _dumpFileName;
 	std::string _errTitle;
 	std::string _errMsg;
 };
