@@ -3,8 +3,10 @@
 #ifndef __CONFIG_BASE_H__
 #define __CONFIG_BASE_H__
 
-#include <common\utils.h>
-#include <common\SimpleIni.h>
+#include <sstream>
+#include <typeinfo>
+#include <common/utils.h>
+#include <common/SimpleIni.h>
 
 template<typename ConfigData>
 class ConfigBase{
@@ -109,6 +111,18 @@ public:
 
 	std::string errMsg() const{
 		return _err;
+	}
+
+	static std::string MakePath(const std::string& dir, const std::string& name){
+		std::ostringstream str;
+		str << dir;
+#ifdef WIN32
+		str << "\\";
+#else
+		str << "/";
+#endif
+		str << name;
+		return str.str();
 	}
 protected:
 	enum Type{
@@ -283,7 +297,7 @@ long mm = SimpleConfig<Data>::instance().Data().mm;
 template<typename ConfigData>
 class SimpleConfig : 
 	public ConfigBase<ConfigData>
-	,public utils::singleton<SimpleConfig<ConfigData>>
+	,public utils::singleton<SimpleConfig<ConfigData> >
 {
 };
 #endif //!__CONFIG_BASE_H__

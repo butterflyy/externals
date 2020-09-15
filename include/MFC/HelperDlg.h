@@ -38,6 +38,10 @@ protected:
 		}
 	}
 
+	void SetTitle(const std::string& title){
+		SetWindowTextA(m_dlg->GetSafeHwnd(), title.c_str());
+	}
+
 	void SetDlgText(int id, const std::string& str){
 		SetDlgItemTextA(m_dlg->GetSafeHwnd(), id, str.c_str());
 	}

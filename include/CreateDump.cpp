@@ -17,26 +17,62 @@ CreateDump::~CreateDump(){
 
 }
 
+
+LPTOP_LEVEL_EXCEPTION_FILTER WINAPI MyDummySetUnhandledExceptionFilter(
+	LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
+{
+	return NULL;
+}
+
+BOOL PreventSetUnhandledExceptionFilter()
+{
+	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+	if (hKernel32 == NULL) return FALSE;
+	void *pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
+	if (pOrgEntry == NULL) return FALSE;
+	unsigned char newJump[100];
+	DWORD dwOrgEntryAddr = (DWORD)pOrgEntry;
+	dwOrgEntryAddr += 5; // add 5 for 5 op-codes for jmp far
+	void *pNewFunc = &MyDummySetUnhandledExceptionFilter;
+	DWORD dwNewEntryAddr = (DWORD)pNewFunc;
+	DWORD dwRelativeAddr = dwNewEntryAddr - dwOrgEntryAddr;
+
+	newJump[0] = 0xE9;  // JMP absolute
+	memcpy(&newJump[1], &dwRelativeAddr, sizeof(pNewFunc));
+	SIZE_T bytesWritten;
+	BOOL bRet = WriteProcessMemory(GetCurrentProcess(),
+		pOrgEntry, newJump, sizeof(pNewFunc)+1, &bytesWritten);
+	return bRet;
+}
+
 void CreateDump::DumpFile(const std::string& dumpFileName){
+	_dumpFileName = dumpFileName;
+
+	SetUnhandledExceptionFilter(UnhandleExceptionFilter);
+
+#ifdef _M_IX86
+	if (!PreventSetUnhandledExceptionFilter()){
+		OutputDebugStringA("PreventSetUnhandledExceptionFilter false");
+	}
+#endif
+}
+
+long _stdcall CreateDump::UnhandleExceptionFilter(_EXCEPTION_POINTERS *ExceptionInfo){
+	OutputDebugStringA("UnhandleExceptionFilter");
+
 	SYSTEMTIME tm;
 	GetLocalTime(&tm);
 	char buff[MAX_PATH];
 	sprintf_s(buff, MAX_PATH, "%04d-%02d-%02d-%02d-%02d-%02d",
 		tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond);
-	_strDumpFile = std::string(buff);
-	if (!dumpFileName.empty()){
-		_strDumpFile += "-";
-		_strDumpFile += dumpFileName;
+	std::string strDumpFile = std::string(buff);
+	if (!_pThis->_dumpFileName.empty()){
+		strDumpFile += "-";
+		strDumpFile += _pThis->_dumpFileName;
 	}
-	_strDumpFile += ".dmp";
+	strDumpFile += ".dmp";
 
-	OutputDebugStringA(_strDumpFile.c_str());
-
-	SetUnhandledExceptionFilter(UnhandleExceptionFilter);
-}
-
-long _stdcall CreateDump::UnhandleExceptionFilter(_EXCEPTION_POINTERS *ExceptionInfo){
-	HANDLE hFile = CreateFileA(_pThis->_strDumpFile.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+	HANDLE hFile = CreateFileA(strDumpFile.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
 		NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE){
 		MINIDUMP_EXCEPTION_INFORMATION ExInfo;
