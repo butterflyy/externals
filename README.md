@@ -4,12 +4,17 @@
 
 # 特点
 
-###  head only
+### head only
     除了小部分windows特有实现
 
 ### 跨平台
+    Linux
+    Windows
+    Cygwin
+    MinGW
+    Android
 
-### C0X支持
+### C98支持
 	common 在不支持C11的linux平台上面，也可以使用，WINDOWS平台需要C11支持
 	commonex 依赖boost，支持C0X
 
@@ -22,7 +27,7 @@
 	ini读写，bmp文件读写，编码转换等。
 
 ## commonex
-	commonex的重构升级版本，完全的跨平台，支持C0X，依赖boost，更加完善的测试用例，保证稳定性。
+	commonex的重构升级版本，完全的跨平台，支持C98，依赖boost，更加完善的测试用例，保证稳定性。
 	测试用例是在 test 下面，使用gtest。
 	
 	目前实现了 
