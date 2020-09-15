@@ -17,9 +17,7 @@ CreateDump::~CreateDump(){
 
 }
 
-#ifndef _M_IX86
-#error "The following code only works for x86!"
-#endif
+
 LPTOP_LEVEL_EXCEPTION_FILTER WINAPI MyDummySetUnhandledExceptionFilter(
 	LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
 {
@@ -51,9 +49,12 @@ void CreateDump::DumpFile(const std::string& dumpFileName){
 	_dumpFileName = dumpFileName;
 
 	SetUnhandledExceptionFilter(UnhandleExceptionFilter);
+
+#ifdef _M_IX86
 	if (!PreventSetUnhandledExceptionFilter()){
 		OutputDebugStringA("PreventSetUnhandledExceptionFilter false");
 	}
+#endif
 }
 
 long _stdcall CreateDump::UnhandleExceptionFilter(_EXCEPTION_POINTERS *ExceptionInfo){
