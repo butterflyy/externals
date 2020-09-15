@@ -6,7 +6,9 @@
 
 ###  head only
     除了小部分windows特有实现
+
 ### 跨平台
+
 ### C0X支持
 	common 在不支持C11的linux平台上面，也可以使用，WINDOWS平台需要C11支持
 	commonex 依赖boost，支持C0X
