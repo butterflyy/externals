@@ -11,10 +11,7 @@ namespace utils
 {
 	class signal {
 	public:
-		enum status {
-			ok = 0,
-			timeout = -1,
-		};
+		typedef typename boost::cv_status status;
 
 		signal()
 			:_waiting(false),
@@ -42,11 +39,11 @@ namespace utils
 		}
 
 		//return status
-		int wait(unsigned long msec = 0xFFFFFFFF /*INFINITE*/) {
+		status wait(unsigned long msec = 0xFFFFFFFF /*INFINITE*/) {
 			boost::unique_lock<boost::mutex> lock(_mutex);
 			if (_set) {//set is first at wait
 				_set = false;
-				return ok;
+				return status::no_timeout;
 			}
 
 			_waiting = true;
@@ -59,13 +56,12 @@ namespace utils
 			}
 
 			_waiting = false;
-			if (status == boost::cv_status::timeout) {
-				return timeout;
-			}
-			else {
+
+			if (status == boost::cv_status::no_timeout) {
 				_set = false;
-				return ok;
 			}
+
+			return status;
 		}
 
 	private:

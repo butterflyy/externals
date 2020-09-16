@@ -1,7 +1,6 @@
 ﻿// utils_signal.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
-#include "pch.h"
 #include <iostream>
 #include <gtest/gtest.h>
 #include <commonex/utils.h>
@@ -14,7 +13,7 @@ TEST(Test, signal) {
 	std::cout << "test 1" << std::endl;
 	{
 		std::thread thd([&]() {
-			ASSERT_EQ(sgl.wait(100), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(100), utils::signal::status::timeout);
 		});
 
 		utils::thread::msleep(1);
@@ -30,8 +29,8 @@ TEST(Test, signal) {
 	{
 		std::thread thd([&]() {
 			utils::thread::msleep(1);//set first
-			ASSERT_EQ(sgl.wait(), utils::signal::ok);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(), utils::signal::status::no_timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 
 		sgl.set();
@@ -42,8 +41,8 @@ TEST(Test, signal) {
 	std::cout << "test 3" << std::endl;
 	{
 		std::thread thd([&]() {
-			ASSERT_EQ(sgl.wait(), utils::signal::ok);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(), utils::signal::status::no_timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 
 		utils::thread::msleep(10);//wait first
@@ -57,8 +56,8 @@ TEST(Test, signal) {
 	{
 		sgl.set();
 		std::thread thd([&]() {
-			ASSERT_EQ(sgl.wait(), utils::signal::ok);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(), utils::signal::status::no_timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 		thd.join();
 	}
@@ -71,8 +70,8 @@ TEST(Test, signal) {
 		sgl.set();
 		sgl.reset();
 		std::thread thd([&]() {
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 		thd.join();
 	}
@@ -82,14 +81,14 @@ TEST(Test, signal) {
 	std::cout << "test 6" << std::endl;
 	{
 		std::thread thd1([&]() {
-			ASSERT_EQ(sgl.wait(2000), utils::signal::ok);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(2000), utils::signal::status::no_timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 
 		std::thread thd2([&]() {
 
-			ASSERT_EQ(sgl.wait(2000), utils::signal::ok);
-			ASSERT_EQ(sgl.wait(1), utils::signal::timeout);
+			ASSERT_EQ(sgl.wait(2000), utils::signal::status::no_timeout);
+			ASSERT_EQ(sgl.wait(1), utils::signal::status::timeout);
 		});
 
 		utils::thread::msleep(100);
@@ -98,5 +97,4 @@ TEST(Test, signal) {
 		thd1.join();
 		thd2.join();
 	}
-
 }

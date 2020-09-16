@@ -1,7 +1,6 @@
 ﻿// utils_signal.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
-#include "pch.h"
 #include <iostream>
 #include <gtest/gtest.h>
 #include <commonex/utils.h>
@@ -9,6 +8,9 @@
 class MyThread : public utils::thread
 {
 public:
+	~MyThread() {
+		quit();
+	}
 	void run() {
 		_run();
 	}
@@ -37,7 +39,6 @@ TEST(Test, thread) {
 		ASSERT_FALSE(thd.is_running());
 
 		thd.start();
-		ASSERT_EQ(thd.start(), thd.running);
 		ASSERT_TRUE(thd.is_running());
 
 		thd.quit();

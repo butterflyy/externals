@@ -11,35 +11,23 @@ namespace utils  {
 	class thread {
 		BOOST_THREAD_NO_COPYABLE(thread)
 	public:
-		enum status {
-			ok = 0,
-			running = -1,
-		};
-
 		thread() BOOST_NOEXCEPT
 			:_quit(false),
 			_running(false)
 		{}
 
 		virtual ~thread() BOOST_NOEXCEPT {
-			try {
-				ensure_thread_over();
-			}
-			catch (...) {
-				//avoid exception;
-			}
 		}
 
 		/*
 		* @brief Start thread
 		* @return error
-		* @problem thread is start last.
 		*/
-		int start() {
+		void start() {
 			boost::unique_lock<boost::mutex> lock(_mutex);
 
 			if (_running) {
-				return running;
+				return;
 			}
 
 			//release last thread data
@@ -50,8 +38,6 @@ namespace utils  {
 			_thread = boost::thread(boost::bind(&thread::work_thread, this));
 
 			_cond.wait(lock, boost::bind(&thread::thread_is_start, this));
-
-			return ok;
 		}
 
 		bool is_quit() const {
