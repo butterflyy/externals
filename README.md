@@ -31,6 +31,11 @@
 	测试用例是在 test 下面，使用gtest。
 	
 	目前实现了 
-	signal.h：使用condition_variable，mutex实现, 但是可以查询等待状态，wait延迟后，set也支持。
-	thread.h: 使用thread，condition_variable，mutex实现，方便类直接继承使用，可以查看线程的状态，并且提供退出循环遍历控制。
+	signal.h：信号事件通知，使用condition_variable，mutex实现, 但是可以查询等待状态，wait延迟后，set也支持。
+	
+	thread.h: 继承使用的线程类，使用thread，condition_variable，mutex实现，方便类直接继承使用，可以查看线程的状态，并且提供退出循环遍历控制。
+	
+	convert_sync.h：异步转换同步类，使用signal.h map实现，单次使用，避免重复，特定用在多线程回调事件，转换同步操作使用。
+	
+	以上代码经过了gtest重复万次的单元测试用例。
 
