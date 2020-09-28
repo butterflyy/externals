@@ -1,4 +1,6 @@
 # 公共库
+[![Build Status](https://travis-ci.org/butterflyy/externals.svg?branch=develop)](https://travis-ci.org/butterflyy/externals)
+[![Build status](https://ci.appveyor.com/api/projects/status/w3a3cyim034ca4on?svg=true)](https://ci.appveyor.com/project/butterflyy/externals)
 
 提供一些公共功能的函数，例如线程，事件，图片处理等，所有其他的项目都会应用这个公共库
 
