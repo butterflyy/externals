@@ -18,11 +18,11 @@
 
 ### C98支持
 	common 在不支持C11的linux平台上面，也可以使用，WINDOWS平台需要C11支持
-	commonex 依赖boost，支持C0X
+	commonex 如果不支持C11，可以依赖boost
 
 # 说明
 
-主要包括 common 和 commoneex， commonex依赖boost
+主要包括 common 和 commoneex， commonex依赖根据编译器选择依赖boost
 
 ## common 
 	提供基本上能用到的很多基本功能，线程，事件，文件读写，字符串转换，base64，
