@@ -17,7 +17,7 @@ set (CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set (CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set (CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 
-option (WITH_GFLAGS "Use gflags" ON)
+option (WITH_GFLAGS "Use gflags" OFF)
 option (WITH_THREADS "Enable multithreading support" ON)
 option (WITH_TLS "Enable Thread Local Storage (TLS) support" ON)
 option (BUILD_SHARED_LIBS "Build shared libraries" OFF)
@@ -44,7 +44,7 @@ include (CTest)
 include (DetermineGflagsNamespace)
 include (GNUInstallDirs)
 
-set (CMAKE_DEBUG_POSTFIX d)
+#set (CMAKE_DEBUG_POSTFIX d)
 set (CMAKE_THREAD_PREFER_PTHREAD 1)
 
 if (WITH_GFLAGS)

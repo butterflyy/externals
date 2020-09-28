@@ -33,36 +33,61 @@ goto 5
 echo "build glog"
 cd 3rdparty/glog-0.4.0
 
-mkdir build_win32
-cd build_win32
-cmake .. -G "%VS%"
+mkdir Build_Win32
+cd Build_Win32
+cmake .. -G "Visual Studio 12 2013"
 cmake --build .
 cmake --build . --config Release
 cd ..
 
-mkdir build_win64
-cd build_win64
+mkdir Build_x64
+cd Build_x64
 set Platform=Win64
 set "VS64=%VS% %Platform%"
-cmake .. -G "%VS64%"
+cmake .. -G "Visual Studio 12 2013 Win64"
 cmake --build .
 cmake --build . --config Release
 cd ..
 cd ..
+
+
+
 
 echo "build gtest"
 cd googletest-release-1.10.0
-mkdir build_win32
-cd build_win32
+mkdir Build_Win32
+cd Build_Win32
 cmake .. -G "%VS%"
 cmake --build .
 cmake --build . --config Release
 cd ..
 
-mkdir build_win64
-cd build_win64
+mkdir Build_x64
+cd Build_x64
 set Platform=Win64
 set "VS64=%VS% %Platform%"
 cmake .. -G "%VS64%"
+cmake --build .
+cmake --build . --config Release
+cd ..
+cd ..
+
+
+
+
+echo "build jsoncpp"
+cd jsoncpp-1.8.3
+mkdir Build_Win32
+cd Build_Win32
+cmake .. -G "Visual Studio 12 2013"
+cmake --build .
+cmake --build . --config Release
+cd ..
+
+mkdir Build_x64
+cd Build_x64
+set Platform=Win64
+set "VS64=%VS% %Platform%"
+cmake .. -G "Visual Studio 12 2013 Win64"
 cmake --build .
 cmake --build . --config Release
