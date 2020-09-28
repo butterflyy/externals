@@ -15,6 +15,6 @@ cmake .. -DUSE_BOOST=OFF
 make
 
 cd bin
-./utils_convert_sync
-./utils_signal
-./utils_thread
+./utils_convert_sync --gtest_repeat=100
+./utils_signal --gtest_repeat=100
+./utils_thread --gtest_repeat=1000

@@ -40,7 +40,7 @@ build_script:
 
 
 test_script:
-  - cd bin\Debug
-  - utils_convert_sync.exe
-  - utils_signal.exe
-  - utils_thread.exe
+  - cd bin\Release
+  - utils_convert_sync.exe --gtest_repeat=100
+  - utils_signal.exe --gtest_repeat=100
+  - utils_thread.exe --gtest_repeat=1000
