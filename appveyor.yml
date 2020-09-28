@@ -1,0 +1,46 @@
+version: '{build}'
+
+image: Visual Studio 2017
+environment:
+  matrix:
+    - GENERATOR: '"Visual Studio 15 2017 Win64"'
+      BUILD_TYPE: Release
+      BUILD_SHARED: 'OFF'
+      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      BOOST_LIBRARYDIR: C:\Libraries\boost_1_67_0\lib64-msvc-14.1
+
+
+build_script:
+- cmd: >-
+
+    echo "build gtest"
+
+    cd 3rdparty/googletest-release-1.10.0
+
+    mkdir build
+
+    cd build
+
+    cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
+
+    cmake --build .
+
+    cd ../../../
+
+    echo "test no boost"
+
+    mkdir build
+
+    cd build
+
+    cmake .. -G %GENERATOR% -DUSE_BOOST=OFF
+
+    cmake --build .
+
+
+
+test_script:
+  - cd bin\Debug
+  - utils_convert_sync.exe
+  - utils_signal.exe
+  - utils_thread.exe
