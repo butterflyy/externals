@@ -29,4 +29,6 @@ install:
 #  - echo  /usr/local/lib >>/etc/ld.so.conf
 #  - ldconfig
   
-script: ./travis.sh
+script:
+  - chmod +x travis.sh
+  - ./travis.sh
