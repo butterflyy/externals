@@ -5,7 +5,32 @@
 #include <commonex/utils.h> //for msleep
 #include <commonex/convert_sync.h>
 
+TEST(Test, checkvs2019conditionbug) {
+	std::condition_variable cv;
 
+	int value;
+
+	std::cout << "Please, enter an integer (I'll be printing dots): \n";
+	std::thread([&] {
+		std::cin >> value;
+		cv.notify_one();
+	}).detach();
+
+	std::mutex mtx;
+	std::unique_lock<std::mutex> lck(mtx);
+
+	int waitingtimes = 0;
+	while (cv.wait_for(lck, std::chrono::seconds(1)) == std::cv_status::timeout
+		&& waitingtimes <= 30) {
+		std::cout << '.' << std::endl;
+		waitingtimes++;
+	}
+
+	std::cout << "You entered: " << value << '\n';
+	ASSERT_EQ(waitingtimes, 31);
+
+	cv.notify_one();
+}
 
 TEST(Test, sync1) {
 	utils::convert_sync<std::string, std::string> sync;
