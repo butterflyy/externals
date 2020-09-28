@@ -3,13 +3,13 @@ set VS=Visual Studio 2013
 goto 0
 
 :0
-echo VS版本：
+echo VS version list
 echo 1 Visual Studio 2013
 echo 2 Visual Studio 2015
 echo 3 Visual Studio 2017
 echo 4 Visual Studio 2019
 
-echo 请选择后回车 : 
+echo Input vs version : 
 set /p operate=
 if %operate%==1 goto 1
 if %operate%==2 goto 2
@@ -57,7 +57,7 @@ echo "build gtest"
 cd googletest-release-1.10.0
 mkdir Build_Win32
 cd Build_Win32
-cmake .. -G "%VS%"
+cmake .. -G "%VS%" -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
 cmake --build .
 cmake --build . --config Release
 cd ..
@@ -66,7 +66,7 @@ mkdir Build_x64
 cd Build_x64
 set Platform=Win64
 set "VS64=%VS% %Platform%"
-cmake .. -G "%VS64%"
+cmake .. -G "%VS64%" -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
 cmake --build .
 cmake --build . --config Release
 cd ..
