@@ -18,8 +18,8 @@ message(STATUS "PROJECT_SOURCE_DIR " ${PROJECT_SOURCE_DIR})
 message(STATUS "PROJECT_BINARY_DIR " ${PROJECT_BINARY_DIR})
 
 configure_file (
-    Config.h.in 
-    ${PROJECT_SOURCE_DIR}/include/Config.h
+    config.h.in 
+    ${PROJECT_SOURCE_DIR}/include/config.h
 )
 
 set(GTEST_DIR 3rdparty/googletest-release-1.10.0)
