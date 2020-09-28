@@ -23,7 +23,7 @@ build_script:
 
     cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
 
-    cmake --build .
+    cmake --build . --config Release
 
     cd ../../../
 
@@ -35,7 +35,7 @@ build_script:
 
     cmake .. -G %GENERATOR% -DUSE_BOOST=OFF
 
-    cmake --build .
+    cmake --build . --config Release
 
 
 

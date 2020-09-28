@@ -43,11 +43,16 @@ endif()
 
 add_definitions(-std=c++11)
 
+link_libraries(gtest gtest_main)
+if(UNIX)
+    link_libraries(pthread)
+    if(USE_BOOST)
+        link_libraries(boost_system boost_thread boost_timer boost_chrono)
+    endif()
+endif()
+
 add_executable(utils_convert_sync include/test/utils_convert_sync)
-target_link_libraries(utils_convert_sync gtest gtest_main)
 
 add_executable(utils_signal include/test/utils_signal)
-target_link_libraries(utils_signal gtest gtest_main)
 
 add_executable(utils_thread include/test/utils_thread)
-target_link_libraries(utils_thread gtest gtest_main)
