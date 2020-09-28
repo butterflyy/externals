@@ -29,7 +29,13 @@ namespace utils {
 		}
 
 		~convert_sync() {
-			boost::lock_guard<boost::mutex> lock(_mutex);
+#ifdef USE_BOOST
+			using namespace boost;
+#else
+			using namespace std;
+#endif
+
+			lock_guard<mutex> lock(_mutex);
 			for (typename SignalMap::const_iterator it = _eventMap.begin();
 				it != _eventMap.end();
 				++it) {
@@ -39,7 +45,13 @@ namespace utils {
 		}
 
 		bool add(SID id) {
-			boost::lock_guard<boost::mutex> lock(_mutex);
+#ifdef USE_BOOST
+			using namespace boost;
+#else
+			using namespace std;
+#endif
+
+			lock_guard<mutex> lock(_mutex);
 
 			if (find(id)) {
 				return false;
@@ -60,7 +72,13 @@ namespace utils {
 		//return status
 		//import : remove id when call.
 		status wait_once(SID id, Data* data, unsigned long msec = 0xFFFFFFFF /*INFINITE*/) {
-			boost::unique_lock<boost::mutex> lock(_mutex);
+#ifdef USE_BOOST
+			using namespace boost;
+#else
+			using namespace std;
+#endif
+
+			unique_lock<mutex> lock(_mutex);
 
 			if (!find(id)) {
 				return no_id;
@@ -85,7 +103,13 @@ namespace utils {
 		//data set return waiting data
 		//return status
 		bool set(SID id, Data data) {
-			boost::lock_guard<boost::mutex> lock(_mutex);
+#ifdef USE_BOOST
+			using namespace boost;
+#else
+			using namespace std;
+#endif
+
+			lock_guard<mutex> lock(_mutex);
 
 			if (!find(id)) {
 				return false;
@@ -107,7 +131,11 @@ namespace utils {
 		}
 	private:
 		SignalMap _eventMap;
+#ifdef USE_BOOST
 		boost::mutex _mutex;
+#else
+		std::mutex _mutex;
+#endif
 	};
 }
 
