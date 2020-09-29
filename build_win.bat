@@ -33,9 +33,25 @@ goto 5
 echo "build glog"
 cd 3rdparty/glog-0.4.0
 
+mkdir Build_Win32_vs13
+cd Build_Win32_vs13
+cmake .. -G "Visual Studio 12 2013"
+cmake --build .
+cmake --build . --config Release
+cd ..
+
+mkdir Build_x64_vs13
+cd Build_x64_vs13
+set Platform=Win64
+set "VS64=%VS% %Platform%"
+cmake .. -G "Visual Studio 12 2013 Win64"
+cmake --build .
+cmake --build . --config Release
+cd ..
+
 mkdir Build_Win32
 cd Build_Win32
-cmake .. -G "Visual Studio 12 2013"
+cmake .. -G "%VS%"
 cmake --build .
 cmake --build . --config Release
 cd ..
@@ -44,7 +60,7 @@ mkdir Build_x64
 cd Build_x64
 set Platform=Win64
 set "VS64=%VS% %Platform%"
-cmake .. -G "Visual Studio 12 2013 Win64"
+cmake .. -G "%VS64%"
 cmake --build .
 cmake --build . --config Release
 cd ..
