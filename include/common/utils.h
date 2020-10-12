@@ -140,7 +140,7 @@ public:
 #endif
 	{}
     virtual ~Thread() {
-		ensureThreadOver();
+		//ensureThreadOver();
 	}
 
     /*

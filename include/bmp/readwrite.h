@@ -218,6 +218,7 @@ namespace bmp{
 		}
 
 		assert(filesize == pFileHead->bfSize);
+		assert(width % 4 == 0);//do not handle width%4!=0
 
 		return filesize;
 	}
@@ -255,6 +256,7 @@ namespace bmp{
 	* @return less than 0 failed, others file size succeeded
 	*/
 	static int WriteDataStream(byte* filebuf, int size, const byte* buf, int width, int height, const RgbQuad* table = nullptr){
+		assert(width % 4 == 0);//do not handle width%4!=0
 		int headsize = sizeof(BitMapFileHeader)+sizeof(BitMapInfoHeader)
 			+256 * sizeof(RgbQuad);
 		int datasize = width * height;
