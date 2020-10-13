@@ -343,8 +343,13 @@ void SetCrashReason(const CrashReason* r) {
 }
 
 void InitGoogleLoggingUtilities(const char* argv0) {
-  CHECK(!IsGoogleLoggingInitialized())
-      << "You called InitGoogleLogging() twice!";
+  //CHECK(!IsGoogleLoggingInitialized())
+  //    << "You called InitGoogleLogging() twice!";
+  if(IsGoogleLoggingInitialized()){
+    LOG(ERROR) << "You called InitGoogleLogging() twice!";
+    return;
+  }
+
   const char* slash = strrchr(argv0, '/');
 #ifdef OS_WINDOWS
   if (!slash)  slash = strrchr(argv0, '\\');
@@ -358,8 +363,13 @@ void InitGoogleLoggingUtilities(const char* argv0) {
 }
 
 void ShutdownGoogleLoggingUtilities() {
-  CHECK(IsGoogleLoggingInitialized())
-      << "You called ShutdownGoogleLogging() without calling InitGoogleLogging() first!";
+  //CHECK(IsGoogleLoggingInitialized())
+  //    << "You called ShutdownGoogleLogging() without calling InitGoogleLogging() first!";
+  if(!IsGoogleLoggingInitialized()){
+    LOG(ERROR) << "You called ShutdownGoogleLogging() without calling InitGoogleLogging() first!";
+    return;
+  }
+
   g_program_invocation_short_name = NULL;
 #ifdef HAVE_SYSLOG_H
   closelog();
