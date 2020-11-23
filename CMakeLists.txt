@@ -56,3 +56,5 @@ add_executable(utils_convert_sync include/test/utils_convert_sync)
 add_executable(utils_signal include/test/utils_signal)
 
 add_executable(utils_thread include/test/utils_thread)
+
+add_executable(utils_thread_pool include/test/utils_thread_pool)

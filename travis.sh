@@ -18,3 +18,4 @@ cd bin
 ./utils_convert_sync --gtest_repeat=10
 ./utils_signal --gtest_repeat=10
 ./utils_thread --gtest_repeat=10
+./utils_thread_pool --gtest_repeat=10
