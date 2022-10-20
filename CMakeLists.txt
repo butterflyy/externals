@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.5)
 project (commonex)
 
 
-option (USE_BOOST "Not support C11, need boost" ON)
+option (USE_BOOST "Not support C11, need boost" OFF)
 
 #boost
 if(USE_BOOST)
@@ -58,3 +58,5 @@ add_executable(utils_signal include/test/utils_signal)
 add_executable(utils_thread include/test/utils_thread)
 
 add_executable(utils_thread_pool include/test/utils_thread_pool)
+
+add_executable(utils_eventdatacache include/test/utils_eventdatacache)
