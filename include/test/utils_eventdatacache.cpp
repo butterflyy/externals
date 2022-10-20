@@ -640,9 +640,7 @@ TEST_F(FixQueueDataCacheTests, MultiThread) {
     using StringQueue = FixQueueDataCache<std::string, 10000>;
     StringQueue cache;
 
-    std::atomic_bool quit(false);
-
-    int datacount(0);
+    std::atomic_int datacount(0);
     std::vector<std::thread> thds;
 
     for (int i = 0; i < 4; i++) {
@@ -652,7 +650,7 @@ TEST_F(FixQueueDataCacheTests, MultiThread) {
 
                 {
                     std::string data;
-                    StringQueue::status status = cache.WaitOne(data, 100);
+                    StringQueue::status status = cache.WaitOne(data, 10);
                     if (status == StringQueue::status::no_timeout) {
                         datacount++;
                     }
@@ -660,7 +658,7 @@ TEST_F(FixQueueDataCacheTests, MultiThread) {
 
                 {
                     std::string data;
-                    StringQueue::status status = cache.WaitOne(data, 100);
+                    StringQueue::status status = cache.WaitOne(data, 10);
                     if (status == StringQueue::status::no_timeout) {
                         datacount++;
                     }
@@ -670,8 +668,51 @@ TEST_F(FixQueueDataCacheTests, MultiThread) {
     }
 
     for (auto& one : thds) {
-        one.join();
+        if(one.joinable())
+            one.join();
     }
+
+    ASSERT_EQ(datacount, 5000*4);
+}
+
+TEST_F(FixQueueDataCacheTests, MultiThread2) {
+    using StringQueue = FixQueueDataCache<std::string, 10000>;
+    StringQueue cache;
+
+    std::atomic_int datacount(0);
+    std::vector<std::thread> thds;
+
+    for (int i = 0; i < 4; i++) {
+        thds.emplace_back([&]() {
+            for (int i = 0; i < 5000; i++) {
+                cache.Add("test data");
+
+                {
+                    std::string data;
+                    StringQueue::status status = cache.WaitOne(data, 10);
+                    if (status == StringQueue::status::no_timeout) {
+                        datacount++;
+                    }
+                }
+
+                {
+                    std::list<std::string> datas;
+                    StringQueue::status status = cache.WaitAny(datas, 10);
+                    if (status == StringQueue::status::no_timeout) {
+                        for(const auto& one: datas)
+                            datacount++;
+                    }
+                }
+            }
+        });
+    }
+
+    for (auto& one : thds) {
+        if(one.joinable())
+            one.join();
+    }
+
+    ASSERT_EQ(datacount, 5000*4);
 }
 
 }  // namespace Cache

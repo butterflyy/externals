@@ -8,21 +8,21 @@
 
 #pragma once
 
-#include <time.h>
 #include <string.h>
+#include <time.h>
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
 
-#include <unordered_map>
+#include <array>
+#include <cassert>
+#include <climits>
+#include <condition_variable>
 #include <list>
-#include <queue>
 #include <memory>
 #include <mutex>
-#include <condition_variable>
-#include <cassert>
-#include <array>
-#include <climits>
+#include <queue>
+#include <unordered_map>
 
 #define FRIEND_TEST(test_case_name, test_name) \
     friend class test_case_name##_##test_name##_Test
@@ -30,7 +30,7 @@
 namespace Cache {
 #ifdef _WIN32
 class TimeSpan {
- public:
+public:
     TimeSpan() { _start = 0; }
 
     ~TimeSpan() {}
@@ -46,12 +46,12 @@ class TimeSpan {
     // millisecond
     int elapsed() { return (clock() - _start); }
 
- private:
+private:
     clock_t _start;
 };
 #else
 class TimeSpan {
- public:
+public:
     TimeSpan() { memset(&_start, 0, sizeof(struct timeval)); }
 
     ~TimeSpan() {}
@@ -75,13 +75,13 @@ class TimeSpan {
         return duration;
     }
 
- private:
+private:
     struct timeval _start;
 };
 #endif
 template <typename _EI, typename _ED, bool _NeedEvent = true>
 class BasicEventDataCache {
- public:
+public:
     typedef _EI EventID;
     typedef _ED EventData;
 
@@ -294,7 +294,7 @@ class BasicEventDataCache {
         return std::cv_status::no_timeout;
     }
 
- private:
+private:
     template <typename T>
     void emplace(const EventID& id, T&& data, std::size_t size,
                  std::size_t expiry) {
@@ -378,7 +378,7 @@ class BasicEventDataCache {
     const BasicEventDataCache& operator=(const BasicEventDataCache&);
 
     FRIEND_TEST(EventDataCacheTests, QueueData);  // for test
- private:
+private:
     MapData _datas;
     mutable std::mutex _mutex;
 
@@ -401,7 +401,7 @@ class BasicEventDataCache {
 
 template <typename _T>
 class QueueDataCache {
- public:
+public:
     typedef _T Type;
 
     typedef typename std::cv_status status;
@@ -411,6 +411,7 @@ class QueueDataCache {
     // insert by moving into data element.
     void Add(Type&& data) { return emplace(std::move(data)); }
 
+    // TODO thread unsafe
     status WaitOne(Type& data, unsigned long msec = ULONG_MAX /*INFINITE*/) {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -432,7 +433,7 @@ class QueueDataCache {
         return status;
     }
 
- private:
+private:
     template <typename T>
     void emplace(T&& data) {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -440,7 +441,7 @@ class QueueDataCache {
         cond_.notify_all();
     }
 
- private:
+private:
     std::queue<Type> datas_;
     std::mutex mutex_;
     std::condition_variable cond_;
@@ -448,7 +449,7 @@ class QueueDataCache {
 
 template <typename _T, std::size_t _Cap>
 class FixQueueDataCache {
- public:
+public:
     typedef _T Type;
 
     typedef typename std::cv_status status;
@@ -459,11 +460,20 @@ class FixQueueDataCache {
     void Add(Type&& data) { return emplace(std::move(data)); }
 
     status WaitOne(Type& data, unsigned long msec = ULONG_MAX /*INFINITE*/) {
-        std::unique_lock<std::mutex> lock(mutex_);
+        // get data first
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (!datas_.empty()) {
+                std::swap(data, datas_.front());
+                datas_.pop_front();
+                return std::cv_status::no_timeout;
+            }
+        }
 
+        // wait data
         std::cv_status status(std::cv_status::no_timeout);
-
-        if (datas_.empty()) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_cond_);
             if (msec == ULONG_MAX) {
                 cond_.wait(lock);
             } else {
@@ -471,10 +481,17 @@ class FixQueueDataCache {
             }
         }
 
+        // wait successed
         if (status == std::cv_status::no_timeout) {
-            assert(!datas_.empty());
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (datas_.empty()) {
+                // wait successed, but multithread call WaitOne
+                return std::cv_status::timeout;
+            }
+
             std::swap(data, datas_.front());
             datas_.pop_front();
+            return std::cv_status::no_timeout;
         }
 
         return status;
@@ -482,11 +499,19 @@ class FixQueueDataCache {
 
     status WaitAny(std::list<Type>& datas,
                    unsigned long msec = ULONG_MAX /*INFINITE*/) {
-        std::unique_lock<std::mutex> lock(mutex_);
+        // get data first
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (!datas_.empty()) {
+                std::swap(datas, datas_);
+                return std::cv_status::no_timeout;
+            }
+        }
 
+        // wait data
         std::cv_status status(std::cv_status::no_timeout);
-
-        if (datas_.empty()) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_cond_);
             if (msec == ULONG_MAX) {
                 cond_.wait(lock);
             } else {
@@ -494,8 +519,16 @@ class FixQueueDataCache {
             }
         }
 
+        // wait successed
         if (status == std::cv_status::no_timeout) {
-            datas.swap(datas_);
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (datas_.empty()) {
+                // wait successed, but multithread call WaitOne
+                return std::cv_status::timeout;
+            }
+
+            std::swap(datas, datas_);
+            return std::cv_status::no_timeout;
         }
 
         return status;
@@ -508,27 +541,34 @@ class FixQueueDataCache {
 
     std::size_t Capacity() const { return _Cap; }
 
- private:
+private:
     template <typename T>
     void emplace(T&& data) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (datas_.size() >= _Cap) {
-            // drop data
-            datas_.pop_front();
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (datas_.size() >= _Cap) {
+                // drop data
+                datas_.pop_front();
+            }
+            datas_.push_back(std::move(data));
         }
-        datas_.push_back(std::move(data));
-        cond_.notify_one();
+
+        {
+            std::unique_lock<std::mutex> lock(mutex_cond_);
+            cond_.notify_one();
+        }
     }
 
- private:
+private:
     std::list<Type> datas_;
     std::mutex mutex_;
     std::condition_variable cond_;
+    std::mutex mutex_cond_;
 };
 
 // Buffer class used to storage byte buffer data.
 class Buffer {
- public:
+public:
     typedef unsigned char byte;
     Buffer() : _data(nullptr), _size(0) {}
 
@@ -619,7 +659,7 @@ class Buffer {
         std::swap(this->_size, right._size);
     }
 
- private:
+private:
     void allocBuffer(size_t size) {
         releaseBuffer();
         _size = size;
@@ -643,7 +683,7 @@ class Buffer {
         _size = 0;
     }
 
- private:
+private:
     byte* _data;
     size_t _size;
 };
